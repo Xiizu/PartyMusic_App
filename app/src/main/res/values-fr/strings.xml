@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="input_username">Nom d\'Utilisateur</string>
+    <string name="input_password">Mot de Passe</string>
+    <string name="action_sign_in">Se connecter</string>
+    <string name="action_register">Inscription</string>
+</resources>
