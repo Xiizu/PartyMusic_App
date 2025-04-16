@@ -5,4 +5,7 @@
     <string name="input_password">Password</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_register">Register</string>
+    <string name="info_login_failed">Login Failed</string>
+    <string name="info_login_success">Login success</string>
+    <string name="message_no_account">Not registered ? Create an account.</string>
 </resources>

@@ -4,4 +4,7 @@
     <string name="input_password">Mot de Passe</string>
     <string name="action_sign_in">Se connecter</string>
     <string name="action_register">Inscription</string>
+    <string name="info_login_failed">Echec de la connexion</string>
+    <string name="info_login_success">Connexion réussie</string>
+    <string name="message_no_account">Pas encore de compte ? S\'inscrire.</string>
 </resources>
