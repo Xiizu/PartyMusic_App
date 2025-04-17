@@ -23,4 +23,5 @@
     <string name="info_password_need_upper">Le mot de passe doit contenir au moins une lettre majuscule</string>
     <string name="info_register_success">Inscription réussie</string>
     <string name="info_register_failed">Echec de l\'inscription</string>
+    <string name="info_email_used">E-mail déja utilisé</string>
 </resources>
