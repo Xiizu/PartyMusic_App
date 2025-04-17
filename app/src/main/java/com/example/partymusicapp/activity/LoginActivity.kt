@@ -22,6 +22,7 @@ import com.example.partymusicapp.MainActivity
 import com.example.partymusicapp.interfaces.ApiService
 import com.example.partymusicapp.support.Database.RetrofitClient
 import com.example.partymusicapp.support.UserDAO
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity(){
@@ -43,7 +44,6 @@ class LoginActivity : AppCompatActivity(){
         button.isEnabled = emailText.isNotEmpty() && passwordText.isNotEmpty()
     }
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -127,5 +127,21 @@ class LoginActivity : AppCompatActivity(){
                 }
             }
         }
+
+        redirectRegister.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+
+    @Suppress("MissingSuperCall")
+    override fun onBackPressed() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.title_exit))
+            .setMessage(getString(R.string.confirm_exit))
+            .setPositiveButton(getString(R.string.yes)) { _, _ -> finishAffinity() }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 }

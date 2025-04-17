@@ -30,23 +30,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var username : TextView
     lateinit var logout : Button
 
-//    val loginActivity =
-//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-//                result : ActivityResult ->
-//            if(result.resultCode == RESULT_OK) {
-//                val data = result.data
-//                if (data != null) {
-//                    user = User(
-//                        data.getIntExtra("id", 0),
-//                        data.getStringExtra("name").toString(),
-//                        data.getStringExtra("email").toString(),
-//                        data.getStringExtra("password").toString(),
-//                        data.getStringExtra("token").toString(),
-//                    )
-//                }
-//            }
-//        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         // Vérifier si un utilisateur est déjà connecté
         userDAO.init(this)

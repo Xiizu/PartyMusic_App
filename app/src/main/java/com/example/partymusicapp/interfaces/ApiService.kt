@@ -22,4 +22,13 @@ interface ApiService {
     @POST("user/login")
     suspend fun loginUser(@Body request: LoginRequest): Response<API_Response<User>>
 
+    data class RegisterRequest(
+        val name: String,
+        val email: String,
+        val password: String
+    )
+    @Headers("Authorization: Bearer $TOKEN")
+    @POST("user/create")
+    suspend fun registerUser(@Body request: RegisterRequest): Response<API_Response<User>>
+
 }
