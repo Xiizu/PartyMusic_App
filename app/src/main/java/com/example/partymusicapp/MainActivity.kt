@@ -52,6 +52,9 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        username = findViewById(R.id.username)
+        username.text = user.name
+
         logout = findViewById(R.id.logout)
         logout.setOnClickListener {
             userDAO.open()

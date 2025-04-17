@@ -204,11 +204,19 @@ class RegisterActivity: AppCompatActivity() {
                         startActivity(intent)
                         finish()
 
-                        Toast.makeText(this@RegisterActivity,getString(R.string.info_register_success),Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@RegisterActivity,
+                            getString(R.string.info_register_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Log.i("MainActivity", "Register Request Success - " + newUser.toString())
+                    } else if (response.code() == 409) {
+                        Toast.makeText(this@RegisterActivity,getString(R.string.info_email_used),Toast.LENGTH_SHORT).show()
+                        Log.e("MainActivity", "Register Request Error - " + body?.message)
                     } else {
                         Toast.makeText(this@RegisterActivity,getString(R.string.info_register_failed),Toast.LENGTH_SHORT).show()
                         Log.e("MainActivity", "Register Request Error - " + body?.message)
+                        Log.e("MainActivity", "Register Request Error - " + response.toString())
                     }
                 } catch (e: Exception) {
                     Log.e("MainActivity", "Register Request Error - " + e.toString())
