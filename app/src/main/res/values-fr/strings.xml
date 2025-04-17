@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="input_username">Nom d\'Utilisateur</string>
+    <string name="input_name">Nom d\'Utilisateur</string>
     <string name="input_password">Mot de Passe</string>
     <string name="action_sign_in">Se connecter</string>
-    <string name="action_register">Inscription</string>
+    <string name="action_sign_up">S\'inscrire</string>
     <string name="info_login_failed">Echec de la connexion</string>
     <string name="info_login_success">Connexion réussie</string>
     <string name="message_no_account">Pas encore de compte ? S\'inscrire.</string>
+    <string name="message_already_account">Déja un compte ? Se connecter.</string>
+    <string name="title_exit">Quitter PartyMusic</string>
+    <string name="confirm_exit">Voulez-vous vraiment quitter l\'application ?</string>
+    <string name="yes">oui</string>
+    <string name="no">non</string>
+    <string name="cancel">annuler</string>
+    <string name="info_invalid_email">Addresse email invalide</string>
+    <string name="info_short_name">Le nom d\'utilisateur doit faire au moins 3 charactères</string>
+    <string name="info_confirm_different">Les mots de passe sont différents</string>
+    <string name="info_password_need_digit">Le mot de passe doit comporter au moins un chiffre</string>
+    <string name="info_password_need_special">Le mot de passe doit comporter au moins un caractère spécial</string>
+    <string name="info_password_need_lower">Le mot de passe doit contenir au moins une lettre minuscule</string>
+    <string name="info_password_need_8chars">Le mot de passe doit faire au moins 8 charactères</string>
+    <string name="info_password_need_upper">Le mot de passe doit contenir au moins une lettre majuscule</string>
+    <string name="info_register_success">Inscription réussie</string>
+    <string name="info_register_failed">Echec de l\'inscription</string>
 </resources>

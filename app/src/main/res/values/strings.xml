@@ -1,11 +1,27 @@
 <resources>
     <string name="app_name" translatable="false">Party Music</string>
-    <string name="input_username">Username</string>
+    <string name="input_name">Username</string>
     <string name="input_email" translatable="false">Email</string>
     <string name="input_password">Password</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="action_register">Register</string>
+    <string name="action_sign_up">Register</string>
     <string name="info_login_failed">Login Failed</string>
     <string name="info_login_success">Login success</string>
     <string name="message_no_account">Not registered ? Create an account.</string>
+    <string name="message_already_account">Already registered ? Login.</string>
+    <string name="title_exit">Exit PartyMusic</string>
+    <string name="confirm_exit">Are you sure you want to leave the app ?</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="cancel">cancel</string>
+    <string name="info_invalid_email">Invalid email address</string>
+    <string name="info_short_name">Username must be at least 3 characters long</string>
+    <string name="info_confirm_different">Passwords do not match</string>
+    <string name="info_password_need_digit">Password must contain at least one number</string>
+    <string name="info_password_need_special">Password must contain at least one special character</string>
+    <string name="info_password_need_lower">Password must contain at least one lowercase letter</string>
+    <string name="info_password_need_8chars">Password must be at least 8 characters long</string>
+    <string name="info_password_need_upper">Password must contain at least one uppercase letter</string>
+    <string name="info_register_success">Successfully signed up</string>
+    <string name="info_register_failed">Signing up failed</string>
 </resources>
