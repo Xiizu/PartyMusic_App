@@ -5,7 +5,7 @@
     <string name="input_password">Password</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_up">Register</string>
-    <string name="info_login_failed">Login Failed</string>
+    <string name="info_login_failed">E-mail or password incorrect</string>
     <string name="info_login_success">Login success</string>
     <string name="message_no_account">Not registered ? Create an account.</string>
     <string name="message_already_account">Already registered ? Login.</string>
@@ -25,4 +25,15 @@
     <string name="info_register_success">Successfully signed up</string>
     <string name="info_register_failed">Signing up failed</string>
     <string name="info_email_used">E-mail already used.</string>
+    <string name="info_drawer_oppened">Drawer oppened</string>
+    <string name="info_drawer_closed">Drawer closed</string>
+    <string name="input_code">Party Code</string>
+    <string name="info_logout">Logout</string>
+    <string name="button_create_room">Create a Party</string>
+    <string name="action_settings">Settings</string>
+    <string name="input_label">Party label</string>
+    <string name="input_description">Party description</string>
+    <string name="error_retry">An error occured, please try again.</string>
+    <string name="info_max_room_reached">You have already created 3 Party</string>
+    <string name="info_refresh">Refresh</string>
 </resources>

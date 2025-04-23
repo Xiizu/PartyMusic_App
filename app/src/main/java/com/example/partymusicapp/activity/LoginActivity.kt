@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.partymusicapp.MainActivity
+import com.example.partymusicapp.activity.RegisterActivity
 import com.example.partymusicapp.interfaces.ApiService
 import com.example.partymusicapp.support.Database.RetrofitClient
 import com.example.partymusicapp.support.UserDAO
@@ -117,9 +118,10 @@ class LoginActivity : AppCompatActivity(){
                         Log.i("MainActivity", "Login Request Success - " + newUser.toString())
                     } else {
                         Toast.makeText(this@LoginActivity,getString(R.string.info_login_failed),Toast.LENGTH_SHORT).show()
-                        Log.e("MainActivity", "Login Request Error - " + body?.message)
+                        Log.e("MainActivity", "Login Request Error - " + response.toString())
                     }
                 } catch (e: Exception) {
+                    Toast.makeText(this@LoginActivity,getString(R.string.error_retry),Toast.LENGTH_SHORT).show()
                     Log.e("MainActivity", "Login Request Error - " + e.toString())
                 } finally {
                     button.isEnabled = true

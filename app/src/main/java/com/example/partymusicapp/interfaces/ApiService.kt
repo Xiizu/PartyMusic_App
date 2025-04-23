@@ -5,6 +5,7 @@ import retrofit2.Response
 import com.example.partymusicapp.TOKEN
 import com.example.partymusicapp.model.API_Response
 import com.example.partymusicapp.model.Dev
+import com.example.partymusicapp.model.Room
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -14,6 +15,7 @@ interface ApiService {
     @POST("ping")
     suspend fun getPing(): Response<Dev>
 
+    // USER
     data class LoginRequest(
         val email: String,
         val password: String
@@ -30,5 +32,22 @@ interface ApiService {
     @Headers("Authorization: Bearer $TOKEN")
     @POST("user/create")
     suspend fun registerUser(@Body request: RegisterRequest): Response<API_Response<User>>
+
+    // ROOM
+    data class CreateRoomRequest(
+        val id : Int,
+        val label: String,
+        val description: String
+    )
+    @Headers("Authorization: Bearer $TOKEN")
+    @POST("room/create")
+    suspend fun createRoom(@Body request: CreateRoomRequest): Response<API_Response<Room>>
+
+    data class GetUserRoomRequest(
+        val id : Int
+    )
+    @Headers("Authorization: Bearer $TOKEN")
+    @POST("room/get")
+    suspend fun getUserRoom(@Body request: GetUserRoomRequest): Response<API_Response<ArrayList<Room>>>
 
 }
