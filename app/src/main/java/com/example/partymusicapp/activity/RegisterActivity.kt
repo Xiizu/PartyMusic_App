@@ -219,6 +219,7 @@ class RegisterActivity: AppCompatActivity() {
                         Log.e("MainActivity", "Register Request Error - " + response.toString())
                     }
                 } catch (e: Exception) {
+                    Toast.makeText(this@RegisterActivity,getString(R.string.error_retry),Toast.LENGTH_SHORT).show()
                     Log.e("MainActivity", "Register Request Error - " + e.toString())
                 } finally {
                     button.isEnabled = true

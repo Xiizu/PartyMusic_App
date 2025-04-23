@@ -4,7 +4,7 @@
     <string name="input_password">Mot de Passe</string>
     <string name="action_sign_in">Se connecter</string>
     <string name="action_sign_up">S\'inscrire</string>
-    <string name="info_login_failed">Echec de la connexion</string>
+    <string name="info_login_failed">E-mail ou mot de passe incorrect</string>
     <string name="info_login_success">Connexion réussie</string>
     <string name="message_no_account">Pas encore de compte ? S\'inscrire.</string>
     <string name="message_already_account">Déja un compte ? Se connecter.</string>
@@ -24,4 +24,15 @@
     <string name="info_register_success">Inscription réussie</string>
     <string name="info_register_failed">Echec de l\'inscription</string>
     <string name="info_email_used">E-mail déja utilisé</string>
+    <string name="info_drawer_oppened">Menu ouvert</string>
+    <string name="info_drawer_closed">Menu fermé</string>
+    <string name="input_code">Code de Party</string>
+    <string name="info_logout">Déconnexion</string>
+    <string name="button_create_room">Créer une Party</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="input_label">Nom de la Party</string>
+    <string name="input_description">Description de la Party</string>
+    <string name="error_retry">Une erreur est survenue, veuillez réessayer.</string>
+    <string name="info_max_room_reached">Vous avez déjà créé 3 Party</string>
+    <string name="info_refresh">Rafraichir</string>
 </resources>
