@@ -1,8 +1,8 @@
 package com.example.partymusicapp.activity
 
 import android.content.Intent
-import android.graphics.Color
 import android.util.Log
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.View
 import android.widget.FrameLayout
@@ -10,7 +10,6 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -25,27 +24,31 @@ import com.example.partymusicapp.model.Room
 import com.example.partymusicapp.model.User
 import com.example.partymusicapp.support.ActivityTracker
 import com.example.partymusicapp.support.Database.RetrofitClient
+import com.example.partymusicapp.support.MusicDAO
 import com.example.partymusicapp.support.RoomDAO
 import com.example.partymusicapp.support.UserDAO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
 open class BaseActivity : AppCompatActivity() {
 
     val userDAO = UserDAO()
-    lateinit var user : User
+    lateinit var user: User
     val roomDAO = RoomDAO()
-    lateinit var rooms : ArrayList<Room>
-    var currentRoom : Room? = null
+    lateinit var rooms: ArrayList<Room>
+    var currentRoom: Room? = null
+    val musicDAO = MusicDAO()
 
-    lateinit var navView : NavigationView
-    lateinit var drawerLayout : DrawerLayout
-    lateinit var toolbar : Toolbar
-    lateinit var titleText : TextView
-    lateinit var settingButton : View
-    lateinit var footerView : LinearLayout
-    lateinit var refreshButton : ImageButton
+    lateinit var navView: NavigationView
+    lateinit var drawerLayout: DrawerLayout
+    lateinit var toolbar: Toolbar
+    lateinit var titleText: TextView
+    lateinit var settingButton: View
+    lateinit var footerView: LinearLayout
+    lateinit var refreshButton: ImageButton
+    lateinit var searchBar: TextInputEditText
 
     override fun setContentView(layoutResID: Int) {
         val drawer = layoutInflater.inflate(R.layout.activity_base, null)
@@ -54,10 +57,20 @@ open class BaseActivity : AppCompatActivity() {
         super.setContentView(drawer)
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
-        navView = findViewById<NavigationView>(R.id.nav_view)
-        rooms = ArrayList<Room>()
+        navView = findViewById(R.id.nav_view)
+        rooms = ArrayList()
 
-        setupDrawer()
+        if (setupDrawer()) {
+            searchBar.setOnKeyListener { _, keyCode, event ->
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+                    val query = searchBar.text.toString()
+                    if (query.length == 8) {
+                        joinRoom(query)
+                    }
+                    true
+                } else false
+            }
+        }
     }
 
     private fun fetchRooms() {
@@ -71,11 +84,7 @@ open class BaseActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.instance.getUserRoom(
-                    ApiService.GetUserRoomRequest(
-                        id = user.id
-                    )
-                )
+                val response = RetrofitClient.instance.getUserRoom(ApiService.GetUserRoomRequest(user.id))
                 val body = response.body()
                 if (body != null && body.statut == "success" && body.data != null) {
                     roomDAO.open()
@@ -84,15 +93,13 @@ open class BaseActivity : AppCompatActivity() {
                         roomDAO.insert(room)
                     }
                     roomDAO.close()
-                    Log.i("MainActivity", "GetUSerRoom Request Success - " + response.toString())
-                }
-                else if (response.code() == 400 || response.code() == 404){
-                    Log.i("MainActivity", "GetUSerRoom Request Error - " + response.body()?.message.toString())
+                    Log.i("MainActivity", "GetUserRoom Request Success - $response")
+                } else if (response.code() == 400 || response.code() == 404) {
+                    Log.i("MainActivity", "GetUserRoom Request Error - ${response.body()?.message}")
                 }
             } catch (e: Exception) {
-                Log.e("MainActivity","GetUSerRoom Request Error - " + e.toString())
+                Log.e("MainActivity", "GetUserRoom Request Error - $e")
             } finally {
-                Log.e("MainActivity","Good")
                 roomDAO.open()
                 val roomsToAdd = roomDAO.index()
                 navView.menu.clear()
@@ -106,8 +113,7 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupDrawer() {
-        // Vérifier si un utilisateur est déjà connecté
+    private fun setupDrawer(): Boolean {
         userDAO.init(this)
         val connectedUser = userDAO.get()
         if (connectedUser == null) {
@@ -118,9 +124,9 @@ open class BaseActivity : AppCompatActivity() {
             user = connectedUser
         }
 
-        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout = findViewById(R.id.drawer_layout)
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar,
             R.string.info_drawer_oppened,
@@ -129,19 +135,20 @@ open class BaseActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // Gérer le header
         val headerView = navView.getHeaderView(0)
-        titleText = headerView.findViewById<TextView>(R.id.header_title)
+        titleText = headerView.findViewById(R.id.header_title)
+        searchBar = headerView.findViewById(R.id.search_bar)
+
         titleText.text = user.name
-        settingButton = headerView.findViewById<View>(R.id.button_setting)
+        settingButton = headerView.findViewById(R.id.button_setting)
         settingButton.setOnClickListener {
             val intent = Intent(this, UserSettingsActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
         }
-        // synchroniser avec la bdd
+
         fetchRooms()
-        // Gérer les actions du corp
+
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.create -> {
@@ -173,8 +180,8 @@ open class BaseActivity : AppCompatActivity() {
             drawerLayout.closeDrawers()
             true
         }
-        // Footer
-        footerView = navView.findViewById<LinearLayout>(R.id.footer)
+
+        footerView = navView.findViewById(R.id.footer)
         footerView.setOnClickListener {
             if (this::class != CreateRoomActivity::class) {
                 val intent = Intent(this, CreateRoomActivity::class.java)
@@ -182,13 +189,24 @@ open class BaseActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        refreshButton = navView.findViewById<ImageButton>(R.id.button_setting)
+
+        refreshButton = navView.findViewById(R.id.button_setting)
         refreshButton.setOnClickListener {
             fetchRooms()
         }
+        return true
     }
 
-    @Suppress("MissingSuperCall")
+    private fun joinRoom(code: String) {
+        searchBar.clearFocus()
+        searchBar.isEnabled = false
+        Log.e("MainActivity", user.id.toString())
+
+        lifecycleScope.launch {
+            // Logique de jointure de room ici
+        }
+    }
+
     override fun onBackPressed() {
         if (ActivityTracker.isLastActivity()) {
             MaterialAlertDialogBuilder(this)
@@ -202,20 +220,19 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
-        var shouldRecreate = false
-    }
-
     override fun onResume() {
         super.onResume()
-        drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout = findViewById(R.id.drawer_layout)
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         }
         if (shouldRecreate) {
             shouldRecreate = false
-            recreate()  // Rafraîchir l'activité
+            recreate()
         }
     }
 
+    companion object {
+        var shouldRecreate = false
+    }
 }

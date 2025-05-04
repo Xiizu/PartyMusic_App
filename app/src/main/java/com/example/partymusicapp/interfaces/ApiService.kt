@@ -1,14 +1,17 @@
 package com.example.partymusicapp.interfaces
 
-import com.example.partymusicapp.model.User
-import retrofit2.Response
 import com.example.partymusicapp.TOKEN
 import com.example.partymusicapp.model.API_Response
 import com.example.partymusicapp.model.Dev
+import com.example.partymusicapp.model.Music
 import com.example.partymusicapp.model.Room
+import com.example.partymusicapp.model.User
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import kotlin.coroutines.Continuation
+
 
 interface ApiService {
     @Headers("Authorization: Bearer $TOKEN")
@@ -49,5 +52,22 @@ interface ApiService {
     @Headers("Authorization: Bearer $TOKEN")
     @POST("room/get")
     suspend fun getUserRoom(@Body request: GetUserRoomRequest): Response<API_Response<ArrayList<Room>>>
+
+    data class JoinRoomRequest(
+        val user_id : Int,
+        val code : String
+    )
+    @Headers("Authorization: Bearer dev")
+    @POST("room/join")
+    suspend fun joinRoom(@Body request: JoinRoomRequest) : Response<API_Response<Room>>
+
+    // MUSIC
+    data class GetMusicRequest(
+        val room_id : Int
+    )
+    @Headers("Authorization: Bearer dev")
+    @POST("music/get")
+    suspend fun getMusic(@Body request: GetMusicRequest) : Response<API_Response<ArrayList<Music>>>
+
 
 }
