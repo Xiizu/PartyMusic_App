@@ -55,6 +55,7 @@
             android:singleLine="true"
             android:maxLength="8"
             android:inputType="text"
-            android:imeOptions="actionSearch"/>
+            android:imeOptions="actionSearch"
+            android:textAllCaps="true"/>
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

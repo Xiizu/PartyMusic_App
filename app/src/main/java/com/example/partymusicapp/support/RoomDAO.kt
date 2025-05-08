@@ -3,6 +3,7 @@ package com.example.partymusicapp.support
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.example.partymusicapp.model.Room
 import com.example.partymusicapp.model.User
 
@@ -26,15 +27,16 @@ class RoomDAO {
         base.delete("room", null, null)
     }
 
-    public fun insert(room: Room?) : Boolean {
+    public fun insert(room: Room) : Boolean {
         open()
         val values = ContentValues()
-        values.put("id", room?.id)
-        values.put("label", room?.label)
-        values.put("description", room?.description)
-        values.put("code", room?.code)
-        values.put("host_id", room?.host_id)
-        val result = base.insert("room", null, values).toInt() // enregistrer la room dans la base de données
+        values.put("id", room.id)
+        values.put("label", room.label)
+        values.put("description", room.description)
+        values.put("code", room.code)
+        values.put("host_id", room.host_id)
+        values.put("host_name", room.host_name)
+        val result = base.insertWithOnConflict("room", null, values, SQLiteDatabase.CONFLICT_REPLACE).toInt() // enregistrer la room dans la base de données
         close()
         return result != -1
     }
@@ -50,9 +52,10 @@ class RoomDAO {
                     val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
                     val code = cursor.getString(cursor.getColumnIndexOrThrow("code"))
                     val host_id = cursor.getInt(cursor.getColumnIndexOrThrow("host_id"))
+                    val host_name = cursor.getString(cursor.getColumnIndexOrThrow("host_name"))
                     cursor.close()
                     close()
-                    return Room(id, label, description, code, host_id)
+                    return Room(id, label, description, code, host_id, host_name)
                 }
             } while (cursor.moveToNext())
         }
@@ -72,7 +75,8 @@ class RoomDAO {
                 val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
                 val code = cursor.getString(cursor.getColumnIndexOrThrow("code"))
                 val host_id = cursor.getInt(cursor.getColumnIndexOrThrow("host_id"))
-                rooms.add(Room(id, label, description, code, host_id))
+                val host_name = cursor.getString(cursor.getColumnIndexOrThrow("host_name"))
+                rooms.add(Room(id, label, description, code, host_id, host_name))
             } while (cursor.moveToNext())
         }
         cursor.close()

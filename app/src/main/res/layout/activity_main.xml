@@ -10,7 +10,7 @@
         android:fillViewport="true">
         <LinearLayout
             android:orientation="vertical"
-            android:padding="32dp"
+            android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
@@ -174,4 +174,10 @@
         android:contentDescription="@string/info_add_music"
         app:maxImageSize="48dp"
         app:srcCompat="@drawable/ic_add"/>
+
+    <ProgressBar
+        android:id="@+id/progress_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 </FrameLayout>

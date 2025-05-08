@@ -3,6 +3,7 @@ package com.example.partymusicapp.support
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.example.partymusicapp.model.Music
 
 class MusicDAO {
@@ -25,19 +26,19 @@ class MusicDAO {
         base.delete("music", null, null)
     }
 
-    fun insert(music: Music?): Boolean {
+    fun insert(music: Music): Boolean {
         open()
         val values = ContentValues()
-        values.put("id", music?.id)
-        values.put("title", music?.title)
-        values.put("artist", music?.artist)
-        values.put("link", music?.link)
-        values.put("duration", music?.duration)
-        values.put("likes", music?.likes)
-        values.put("playable", music?.playable)
-        values.put("room_id", music?.room_id)
-        values.put("user_name", music?.user_name)
-        values.put("user_id", music?.user_id)
+        values.put("id", music.id)
+        values.put("title", music.title)
+        values.put("artist", music.artist)
+        values.put("link", music.link)
+        values.put("duration", music.duration)
+        values.put("likes", music.likes)
+        values.put("playable", music.playable)
+        values.put("room_id", music.room_id)
+        values.put("user_name", music.user_name)
+        values.put("user_id", music.user_id)
         val result = base.insert("music", null, values).toInt()
         close()
         return result != -1
@@ -55,13 +56,13 @@ class MusicDAO {
                     val link = cursor.getString(cursor.getColumnIndexOrThrow("link"))
                     val duration = cursor.getString(cursor.getColumnIndexOrThrow("duration"))
                     val likes = cursor.getInt(cursor.getColumnIndexOrThrow("likes"))
-                    val playable = cursor.getInt(cursor.getColumnIndexOrThrow("playable")) == 1
+                    val playable = cursor.getInt(cursor.getColumnIndexOrThrow("playable"))
                     val room_id = cursor.getInt(cursor.getColumnIndexOrThrow("room_id"))
                     val user_name = cursor.getString(cursor.getColumnIndexOrThrow("user_name"))
                     val user_id = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"))
                     cursor.close()
                     close()
-                    return Music(id, title, artist, duration, likes, link, playable, room_id, user_id, user_name)
+                    return Music(id, title, artist, duration, link, likes, playable, user_id, room_id, user_name)
                 }
             } while (cursor.moveToNext())
         }
@@ -84,10 +85,10 @@ class MusicDAO {
                     val link = cursor.getString(cursor.getColumnIndexOrThrow("link"))
                     val duration = cursor.getString(cursor.getColumnIndexOrThrow("duration"))
                     val likes = cursor.getInt(cursor.getColumnIndexOrThrow("likes"))
-                    val playable = cursor.getInt(cursor.getColumnIndexOrThrow("playable")) == 1
+                    val playable = cursor.getInt(cursor.getColumnIndexOrThrow("playable"))
                     val user_name = cursor.getString(cursor.getColumnIndexOrThrow("user_name"))
                     val user_id = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"))
-                    musics.add(Music(id, title, artist, duration, likes, link, playable, room_id, user_id, user_name))
+                    musics.add(Music(id, title, artist, duration, link, likes, playable, user_id, room_id, user_name))
                 }
             } while (cursor.moveToNext())
         }

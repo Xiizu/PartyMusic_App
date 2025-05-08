@@ -1,5 +1,6 @@
 package com.example.partymusicapp
 
+import android.R.attr.delay
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -16,12 +17,16 @@ import com.example.partymusicapp.model.Music
 import com.example.partymusicapp.model.Room
 import com.example.partymusicapp.support.ActivityTracker
 import com.example.partymusicapp.support.MusicAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import android.util.Log
+import com.example.partymusicapp.R
 
 class MainActivity : BaseActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MusicAdapter
     private lateinit var roomName: TextView
+    private lateinit var progressSpinner: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,10 +39,13 @@ class MainActivity : BaseActivity() {
             insets
         }
 
+        musicDAO.init(this)
         recyclerView = findViewById(R.id.next_music_list)
         adapter = MusicAdapter(mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+        progressSpinner = findViewById(R.id.progress_spinner)
+        progressSpinner.visibility = View.GONE
 
         roomName = findViewById(R.id.room_name)
 
@@ -46,13 +54,13 @@ class MainActivity : BaseActivity() {
 
     private fun displayRoomView(room: Room) {
         roomName.text = room.label
-        musicDAO.init(this)
         musicDAO.open()
         val musics = musicDAO.index(room.id)
-        adapter.clear()
+        adapter.clear()  // Clear previous music
         musics.forEach { music ->
-            adapter.addItem(music)
+            adapter.addItem(music)  // Add new music
         }
+        adapter.notifyDataSetChanged()  // Force the adapter to refresh
         musicDAO.close()
     }
 
@@ -64,8 +72,10 @@ class MainActivity : BaseActivity() {
         val roomId = intent.getIntExtra("ROOM_ID", -1)
         val fetchedRoom = if (roomId != -1) roomDAO.get(roomId) else null
         if (fetchedRoom == null) {
+            Log.w("MainActivity", "Room not found for ID: $roomId")
             displayNullView()
         } else {
+            Log.i("MainActivity", "Room found: ${fetchedRoom.label}")
             displayRoomView(fetchedRoom)
         }
     }
@@ -84,5 +94,18 @@ class MainActivity : BaseActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         update()
+    }
+
+    override fun onBackPressed() {
+        if (ActivityTracker.isLastActivity()) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.title_exit))
+                .setMessage(getString(R.string.confirm_exit))
+                .setPositiveButton(getString(R.string.yes)) { _, _ -> finishAffinity() }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
+        } else {
+            super.onBackPressed()
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.partymusicapp.activity
 
 import android.content.Intent
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
@@ -17,8 +19,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.partymusicapp.MainActivity
 import com.example.partymusicapp.R
+import com.example.partymusicapp.adapter.RoomAdapter
 import com.example.partymusicapp.interfaces.ApiService
 import com.example.partymusicapp.model.Room
 import com.example.partymusicapp.model.User
@@ -31,6 +36,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -41,7 +47,6 @@ open class BaseActivity : AppCompatActivity() {
     var currentRoom: Room? = null
     val musicDAO = MusicDAO()
 
-    lateinit var navView: NavigationView
     lateinit var drawerLayout: DrawerLayout
     lateinit var toolbar: Toolbar
     lateinit var titleText: TextView
@@ -49,6 +54,8 @@ open class BaseActivity : AppCompatActivity() {
     lateinit var footerView: LinearLayout
     lateinit var refreshButton: ImageButton
     lateinit var searchBar: TextInputEditText
+    lateinit var roomRecycler: RecyclerView
+    lateinit var roomAdapter: RoomAdapter
 
     override fun setContentView(layoutResID: Int) {
         val drawer = layoutInflater.inflate(R.layout.activity_base, null)
@@ -57,10 +64,26 @@ open class BaseActivity : AppCompatActivity() {
         super.setContentView(drawer)
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
-        navView = findViewById(R.id.nav_view)
         rooms = ArrayList()
 
         if (setupDrawer()) {
+            var isEditing = false
+
+            searchBar.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+                override fun afterTextChanged(s: Editable?) {
+                    if (!isEditing) {
+                        isEditing = true
+                        val upperText = s.toString().uppercase(Locale.getDefault())
+                        searchBar.setText(upperText)
+                        searchBar.setSelection(upperText.length)
+                        isEditing = false
+                    }
+                }
+            })
             searchBar.setOnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
                     val query = searchBar.text.toString()
@@ -73,15 +96,53 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    fun goToRoom(room: Room) {
+        lifecycleScope.launch {
+            fetchMusics(room.id)
+            startActivity(Intent(this@BaseActivity, MainActivity::class.java).apply {
+                putExtra("ROOM_ID", room.id)
+                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            })
+        }
+    }
+
+    private suspend fun fetchMusics(roomId: Int) {
+        try {
+            val response = RetrofitClient.instance.getMusic(ApiService.GetMusicRequest(roomId))
+            val body = response.body()
+            if (body != null && body.statut == "success" && body.data != null) {
+                musicDAO.init(this@BaseActivity)
+                musicDAO.open()
+                musicDAO.emptyRoom(roomId)
+                for (music in body.data) {
+                    musicDAO.insert(music)
+                }
+                musicDAO.close()
+                Log.i(
+                    "MainActivity",
+                    "GetMusics Request Success - ${body.data.size} music fetched for room $roomId"
+                )
+            } else {
+                val message = body?.message ?: "Erreur inconnue"
+                Log.e("MainActivity", "GetMusics Request Error - $message")
+            }
+        } catch (e: Exception) {
+            Log.e("MainActivity", "GetMusics Request Error - $e")
+        }
+    }
+
+    private fun putAllRooms() {
+        roomDAO.open()
+        val roomsToAdd = roomDAO.index()
+        roomDAO.close()
+        rooms.clear()
+        rooms.addAll(roomsToAdd)
+        roomAdapter.updateRooms(rooms)
+    }
+
     private fun fetchRooms() {
         roomDAO.init(this)
-        val initRoomsToAdd = roomDAO.index()
-        navView.menu.clear()
-        navView.inflateMenu(R.menu.drawer_menu)
-        for (room in initRoomsToAdd) {
-            val item = navView.menu.add(Menu.NONE, room.id, Menu.NONE, room.label)
-            rooms.add(room)
-        }
+        putAllRooms()
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.instance.getUserRoom(ApiService.GetUserRoomRequest(user.id))
@@ -93,22 +154,16 @@ open class BaseActivity : AppCompatActivity() {
                         roomDAO.insert(room)
                     }
                     roomDAO.close()
-                    Log.i("MainActivity", "GetUserRoom Request Success - $response")
+                    Log.i("MainActivity", "GetUserRoom Request Success - ${body.data.size} room fetched")
                 } else if (response.code() == 400 || response.code() == 404) {
-                    Log.i("MainActivity", "GetUserRoom Request Error - ${response.body()?.message}")
+                    Log.e("MainActivity", "GetUserRoom Request Error - ${response.body()?.message}")
+                } else {
+                    Log.e("MainActivity", "GetUserRoom Request Error - $response")
                 }
             } catch (e: Exception) {
                 Log.e("MainActivity", "GetUserRoom Request Error - $e")
             } finally {
-                roomDAO.open()
-                val roomsToAdd = roomDAO.index()
-                navView.menu.clear()
-                navView.inflateMenu(R.menu.drawer_menu)
-                for (room in roomsToAdd) {
-                    val item = navView.menu.add(Menu.NONE, room.id, Menu.NONE, room.label)
-                    rooms.add(room)
-                }
-                roomDAO.close()
+                putAllRooms()
             }
         }
     }
@@ -135,53 +190,25 @@ open class BaseActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        val headerView = navView.getHeaderView(0)
-        titleText = headerView.findViewById(R.id.header_title)
-        searchBar = headerView.findViewById(R.id.search_bar)
+        titleText = findViewById(R.id.header_title)
+        searchBar = findViewById(R.id.search_bar)
 
         titleText.text = user.name
-        settingButton = headerView.findViewById(R.id.button_setting)
+        settingButton = findViewById(R.id.button_setting)
         settingButton.setOnClickListener {
             val intent = Intent(this, UserSettingsActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
         }
 
+        roomRecycler = findViewById(R.id.room_holder)
+        roomRecycler.layoutManager = LinearLayoutManager(this)
+        roomAdapter = RoomAdapter(this@BaseActivity, rooms)
+        roomRecycler.adapter = roomAdapter
+
+
         fetchRooms()
-
-        navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.create -> {
-                    if (this::class != MainActivity::class) {
-                        val intent = Intent(this, MainActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                        startActivity(intent)
-                    }
-                }
-                R.id.test -> {
-                    Toast.makeText(this, "Test clicked", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    val roomId = menuItem.itemId
-                    roomDAO.open()
-                    val selectedRoom = roomDAO.get(roomId)
-                    roomDAO.close()
-                    if (selectedRoom == null) {
-                        Toast.makeText(this, getString(R.string.error_retry), Toast.LENGTH_SHORT).show()
-                    } else {
-                        val intent = Intent(this, MainActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                        intent.putExtra("ROOM_ID", selectedRoom.id)
-                        startActivity(intent)
-                    }
-                }
-            }
-            drawerLayout.closeDrawers()
-            true
-        }
-
-        footerView = navView.findViewById(R.id.footer)
+        footerView = findViewById(R.id.footer)
         footerView.setOnClickListener {
             if (this::class != CreateRoomActivity::class) {
                 val intent = Intent(this, CreateRoomActivity::class.java)
@@ -190,20 +217,53 @@ open class BaseActivity : AppCompatActivity() {
             }
         }
 
-        refreshButton = navView.findViewById(R.id.button_setting)
+        refreshButton = findViewById(R.id.refresh_button)
         refreshButton.setOnClickListener {
             fetchRooms()
         }
+
         return true
     }
 
     private fun joinRoom(code: String) {
         searchBar.clearFocus()
         searchBar.isEnabled = false
-        Log.e("MainActivity", user.id.toString())
 
         lifecycleScope.launch {
-            // Logique de jointure de room ici
+            try {
+                val response = RetrofitClient.instance.joinRoom(ApiService.JoinRoomRequest(user.id, code))
+                val body = response.body()
+
+                if (body != null && body.statut == "success" && body.data != null) {
+                    val joinedRoom = body.data
+                    searchBar.text = null
+                    // database
+                    roomDAO.open()
+                    roomDAO.insert(joinedRoom)
+                    roomDAO.close()
+                    // drawer
+                    rooms.add(joinedRoom)
+                    roomAdapter.updateRooms(rooms)
+                    // vue
+                    lifecycleScope.launch {
+                        fetchMusics(joinedRoom.id)
+                        goToRoom(joinedRoom)
+                    }
+                    Log.i("MainActivity", "JoinRoom Request Success - $response")
+                } else if (response.code() == 400 || response.code() == 404) {
+                    Toast.makeText(this@BaseActivity, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show()
+                    Log.e("MainActivity", "JoinRoom Request Error - ${body?.message}")
+                } else {
+                    Toast.makeText(this@BaseActivity, getString(R.string.error_retry), Toast.LENGTH_SHORT).show()
+                    Log.e("MainActivity", "JoinRoom Request Unknown Error - $response")
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@BaseActivity, getString(R.string.error_retry), Toast.LENGTH_SHORT).show()
+                Log.e("MainActivity", "JoinRoom Request Exception - $e")
+            } finally {
+                searchBar.isEnabled = true
+                fetchRooms()
+            }
         }
     }
 
@@ -225,6 +285,7 @@ open class BaseActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
+            fetchRooms()
         }
         if (shouldRecreate) {
             shouldRecreate = false

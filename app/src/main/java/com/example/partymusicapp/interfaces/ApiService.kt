@@ -69,5 +69,12 @@ interface ApiService {
     @POST("music/get")
     suspend fun getMusic(@Body request: GetMusicRequest) : Response<API_Response<ArrayList<Music>>>
 
+    data class AllMusicRequest(
+        val user_id : Int
+    )
+    @Headers("Authorization: Bearer dev")
+    @POST("music/get")
+    suspend fun allMusic(@Body request: AllMusicRequest) : Response<API_Response<ArrayList<Music>>>
+
 
 }
