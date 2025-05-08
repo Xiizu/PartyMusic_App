@@ -5,75 +5,137 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.appcompat.widget.Toolbar
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:id="@+id/toolbar"
+            android:background="?attr/colorPrimary"
+            android:fitsSystemWindows="true"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"/>
+        <FrameLayout
+            android:id="@+id/base_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+<!--    <com.google.android.material.navigation.NavigationView-->
+<!--        android:id="@+id/nav_view"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_gravity="start"-->
+<!--        app:headerLayout="@layout/drawer_header"-->
+<!--        app:menu="@menu/drawer_menu">-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/room_holder"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <FrameLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_weight="1" />-->
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/footer"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            android:background="?attr/colorPrimary"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:padding="16dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:gravity="center_horizontal"-->
+<!--                android:text="@string/button_create_room"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textSize="14sp" />-->
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/button_setting"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--                android:contentDescription="@string/info_refresh"-->
+<!--                android:src="@drawable/ic_refresh"-->
+<!--                app:tint="@android:color/white" />-->
+<!--        </LinearLayout>-->
+<!--    </com.google.android.material.navigation.NavigationView>-->
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                android:fitsSystemWindows="true" />
+            <!-- Intégration directe du header -->
+            <include layout="@layout/drawer_header" />
 
-            <FrameLayout
-                android:id="@+id/base_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-        </LinearLayout>
-
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/nav_view"
-        android:layout_gravity="start"
-        app:menu="@menu/drawer_menu"
-        app:headerLayout="@layout/drawer_header">
-        <!-- footer -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="1">
-            <FrameLayout
+            <!-- Zone scrollable -->
+            <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/room_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:clipToPadding="false"
+                    android:scrollbars="vertical"/>
+            </ScrollView>
+
+            <!-- Footer -->
             <LinearLayout
                 android:id="@+id/footer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="?attr/colorPrimary"
-                android:padding="16dp"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
-
                     android:text="@string/button_create_room"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
 
                 <ImageButton
-                    android:id="@+id/button_setting"
+                    android:id="@+id/refresh_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/info_refresh"
                     android:src="@drawable/ic_refresh"
-                    app:tint="@android:color/white"/>
-
+                    app:tint="@android:color/white" />
             </LinearLayout>
-
         </LinearLayout>
     </com.google.android.material.navigation.NavigationView>
+
+
+
+
+
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

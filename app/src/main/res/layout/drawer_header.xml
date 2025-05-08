@@ -1,69 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/drawer_header.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="160dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="bottom"
     android:orientation="vertical"
     android:background="?attr/colorPrimary"
-    android:gravity="bottom"
-    android:padding="16dp">
-
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="160dp">
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingBottom="16dp">
+        android:orientation="horizontal"
+        android:paddingBottom="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <TextView
-            android:id="@+id/header_title"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="@android:color/white"
             android:textSize="32sp"
             android:textStyle="bold"
-            android:gravity="center_horizontal"/>
-
+            android:textColor="@android:color/white"
+            android:gravity="center_horizontal"
+            android:id="@+id/header_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:layout_weight="1"/>
         <ImageButton
             android:id="@+id/button_setting"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/action_settings"
-            android:padding="8dp"
             android:src="@drawable/ic_settings"
+            android:contentDescription="@string/action_settings"
             app:tint="@android:color/white"/>
-
     </LinearLayout>
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/search_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/input_code"
-        style="@style/Widget.Material3.TextInputLayout.FilledBox"
-        app:endIconDrawable="@drawable/ic_search"
-        app:endIconTint="@color/black"
-        app:endIconMode="custom"
         app:boxBackgroundMode="filled"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusTopStart="12dp"
         app:boxStrokeWidth="0dp"
         app:boxStrokeWidthFocused="0dp"
-        app:boxCornerRadiusTopStart="12dp"
-        app:boxCornerRadiusTopEnd="12dp"
-        app:boxCornerRadiusBottomStart="12dp"
-        app:boxCornerRadiusBottomEnd="12dp">
-
+        app:endIconDrawable="@drawable/ic_search"
+        app:endIconMode="custom"
+        app:endIconTint="@color/black"
+        style="@style/Widget.Material3.TextInputLayout.FilledBox">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
+            android:singleLine="true"
             android:maxLength="8"
+            android:inputType="text"
             android:imeOptions="actionSearch"
-            android:singleLine="true"/>
+            android:textAllCaps="true"/>
     </com.google.android.material.textfield.TextInputLayout>
-
-
 </LinearLayout>

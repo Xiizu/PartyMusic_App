@@ -36,4 +36,8 @@
     <string name="error_retry">An error occured, please try again.</string>
     <string name="info_max_room_reached">You have already created 3 Party</string>
     <string name="info_refresh">Refresh</string>
+    <string name="info_add_music">Add a music</string>
+    <string name="info_like">Like</string>
+    <string name="info_link">Open link</string>
+    <string name="error_room_not_found">Party not found</string>
 </resources>

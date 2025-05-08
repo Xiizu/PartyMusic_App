@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="15dp"
+    android:id="@+id/room_button"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackground"
+
+    >
+
+    <TextView
+        android:id="@+id/room_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="Label"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/room_button"
+        app:layout_constraintStart_toStartOf="@+id/room_button"
+        app:layout_constraintTop_toTopOf="@id/room_button" />
+
+    <TextView
+        android:id="@+id/room_host"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:text="Host"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@id/room_button"
+        app:layout_constraintEnd_toEndOf="@+id/room_button"
+        app:layout_constraintTop_toTopOf="@id/room_button" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -35,4 +35,8 @@
     <string name="error_retry">Une erreur est survenue, veuillez réessayer.</string>
     <string name="info_max_room_reached">Vous avez déjà créé 3 Party</string>
     <string name="info_refresh">Rafraichir</string>
+    <string name="info_add_music">Ajouter une musique</string>
+    <string name="info_like">J\'aime</string>
+    <string name="info_link">Ouvrir le lien</string>
+    <string name="error_room_not_found">Party introuvable</string>
 </resources>

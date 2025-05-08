@@ -96,6 +96,12 @@ class CreateRoomActivity : BaseActivity() {
                         val newRoom = body.data
                         roomDAO.init(this@CreateRoomActivity)
                         roomDAO.insert(newRoom)
+
+                        startActivity(Intent(this@CreateRoomActivity, MainActivity::class.java).apply {
+                            putExtra("ROOM_ID", newRoom.id)
+                            addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        })
+
                         BaseActivity.shouldRecreate = true
                         finish()
                         Log.i("MainActivity", "CreateRoom Request Success - " + response.toString())
