@@ -25,11 +25,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ProgressBar
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.partymusicapp.R
+import com.example.partymusicapp.activity.CreateRoomActivity
 import com.example.partymusicapp.interfaces.ApiService
 import com.example.partymusicapp.model.YouTubeVideoItem
 import com.example.partymusicapp.support.Database.RetrofitClient
@@ -49,6 +52,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import com.example.partymusicapp.support.OnYouTubeVideoClickListener
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : BaseActivity() {
@@ -61,6 +65,10 @@ class MainActivity : BaseActivity() {
     private lateinit var youTubePlayerView : YouTubePlayerView
     private lateinit var playButton : ImageButton
     private lateinit var pauseButton : ImageButton
+    private lateinit var nextButton : ImageButton
+    private lateinit var previousButton : ImageButton
+    private lateinit var roomLayout : ScrollView
+    private lateinit var noRoomLayout : FrameLayout
 
     private lateinit var audioManager: AudioManager
 
@@ -85,24 +93,15 @@ class MainActivity : BaseActivity() {
         ActivityTracker.register(this)
 
         setContentView(R.layout.activity_main)
-        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val result = audioManager.requestAudioFocus(
-            focusChangeListener,
-            AudioManager.STREAM_MUSIC,
-            AudioManager.AUDIOFOCUS_GAIN
-        )
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            Log.d("AudioFocus", "Audio focus granted")
-        } else {
-            Log.w("AudioFocus", "Audio focus NOT granted")
-        }
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
             val systemBars: Insets = insets.getInsets(Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        roomLayout = findViewById(R.id.room_layout)
+        noRoomLayout = findViewById(R.id.no_room_layout)
 
         musicDAO.init(this)
         recyclerView = findViewById(R.id.next_music_list)
@@ -117,6 +116,8 @@ class MainActivity : BaseActivity() {
 
         playButton  = findViewById<ImageButton>(R.id.play_button)
         pauseButton = findViewById<ImageButton>(R.id.pause_button)
+        nextButton = findViewById<ImageButton>(R.id.next_button)
+        previousButton = findViewById<ImageButton>(R.id.previous_button)
 
         youTubePlayerView = findViewById<YouTubePlayerView>(R.id.youtube_player_view)
         lifecycle.addObserver(youTubePlayerView)
@@ -155,8 +156,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-
-
     private fun showSearchModal() {
         val dialog = BottomSheetDialog(this)
         val searchView = layoutInflater.inflate(R.layout.bottom_sheet_music_search, null)
@@ -182,18 +181,23 @@ class MainActivity : BaseActivity() {
                         val response = RetrofitClient.instance.addMusic(ApiService.AddMusicRequest(musique.room_id, musique.user_id, musique.title, musique.artist, musique.link))
                         val body = response.body()
                         if (body != null && body.statut == "success") {
-                            musicDAO.insert(musique)
-                            adapter.addItem(musique)
-                            adapter.notifyDataSetChanged()
-                            dialog.hide()
-                            dialog.dismiss()
-                            Log.i("MainActivity", "AddMusic Request Success - $response")
+                            withContext(Dispatchers.Main) {
+                                musicDAO.insert(musique)
+                                adapter.addItem(musique)
+                                adapter.notifyDataSetChanged()
+                                Log.i("MainActivity", "AddMusic Request Success - $response")
+                                dialog.dismiss()
+                            }
                         } else {
-                            Toast.makeText(this@MainActivity, getString(R.string.error_retry), Toast.LENGTH_SHORT).show()
-                            Log.e("MainActivity", "AddMusic Request Error - $response")
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(this@MainActivity, getString(R.string.error_retry), Toast.LENGTH_SHORT).show()
+                                Log.e("MainActivity", "AddMusic Request Error - $response")
+                            }
                         }
                     } catch (e: Exception) {
-                        Log.e("DB", "Erreur lors de l'ajout : ${e.message}")
+                        withContext(Dispatchers.Main) {
+                            Log.e("DB", "Erreur lors de l'ajout : ${e.message}")
+                        }
                     }
                 }
             }
@@ -246,6 +250,23 @@ class MainActivity : BaseActivity() {
     }
 
     private fun displayRoomView(room: Room) {
+        roomLayout.visibility = View.VISIBLE
+        progressSpinner.visibility = View.GONE
+        addMusicButton.visibility = View.VISIBLE
+        noRoomLayout.visibility = View.GONE
+        if (room.host_id != user.id) {
+            playButton.visibility = View.GONE
+            pauseButton.visibility = View.GONE
+            nextButton.visibility = View.GONE
+            previousButton.visibility = View.GONE
+            youTubePlayerView.visibility = View.GONE
+        } else {
+            playButton.visibility = View.VISIBLE
+            pauseButton.visibility = View.VISIBLE
+            nextButton.visibility = View.VISIBLE
+            previousButton.visibility = View.VISIBLE
+            youTubePlayerView.visibility = View.VISIBLE
+        }
         roomName.text = room.label
         musicDAO.open()
         val musics = musicDAO.index(room.id)
@@ -262,7 +283,15 @@ class MainActivity : BaseActivity() {
     }
 
     private fun displayNullView() {
-        roomName.text = user.name
+        roomLayout.visibility = View.GONE
+        progressSpinner.visibility = View.GONE
+        addMusicButton.visibility = View.GONE
+        noRoomLayout.visibility = View.VISIBLE
+        noRoomLayout.findViewById<Button>(R.id.create_room_button).setOnClickListener {
+            val intent = Intent(this, CreateRoomActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+        }
     }
 
     private fun update() {

@@ -146,11 +146,9 @@
             <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
                 android:id="@+id/youtube_player_view"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="0dp"
                 android:visibility="visible"
                 app:autoPlay="false" />
-
-
             <View
                 android:background="@android:color/darker_gray"
                 android:layout_width="match_parent"
@@ -189,4 +187,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:id="@+id/no_room_layout"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/home"
+                android:id="@+id/home"
+                android:layout_marginBottom="10dp"
+                android:textSize="24sp"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/button_create_room"
+                android:id="@+id/create_room_button"
+                android:layout_margin="15dp"/>
+        </LinearLayout>
+    </FrameLayout>
+
+
 </FrameLayout>
+
