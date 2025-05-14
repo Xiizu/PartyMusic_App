@@ -39,4 +39,5 @@
     <string name="info_like">J\'aime</string>
     <string name="info_link">Ouvrir le lien</string>
     <string name="error_room_not_found">Party introuvable</string>
+    <string name="home">Accueil</string>
 </resources>

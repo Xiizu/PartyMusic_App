@@ -178,9 +178,15 @@ open class BaseActivity : AppCompatActivity() {
         } else {
             user = connectedUser
         }
-
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        toolbar.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            startActivity(intent)
+        }
+
         drawerLayout = findViewById(R.id.drawer_layout)
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar,

@@ -57,7 +57,7 @@ interface ApiService {
         val user_id : Int,
         val code : String
     )
-    @Headers("Authorization: Bearer dev")
+    @Headers("Authorization: Bearer $TOKEN")
     @POST("room/join")
     suspend fun joinRoom(@Body request: JoinRoomRequest) : Response<API_Response<Room>>
 
@@ -65,16 +65,26 @@ interface ApiService {
     data class GetMusicRequest(
         val room_id : Int
     )
-    @Headers("Authorization: Bearer dev")
+    @Headers("Authorization: Bearer $TOKEN")
     @POST("music/get")
     suspend fun getMusic(@Body request: GetMusicRequest) : Response<API_Response<ArrayList<Music>>>
 
     data class AllMusicRequest(
         val user_id : Int
     )
-    @Headers("Authorization: Bearer dev")
+    @Headers("Authorization: Bearer $TOKEN")
     @POST("music/get")
     suspend fun allMusic(@Body request: AllMusicRequest) : Response<API_Response<ArrayList<Music>>>
 
+    data class AddMusicRequest(
+        val room_id : Int,
+        val user_id : Int,
+        val title : String,
+        val artist : String,
+        val link : String
+    )
+    @Headers("Authorization: Bearer $TOKEN")
+    @POST("music/create")
+    suspend fun addMusic(@Body request: AddMusicRequest) : Response<API_Response<Music>>
 
 }
