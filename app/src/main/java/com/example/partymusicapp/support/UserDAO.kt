@@ -65,5 +65,4 @@ class UserDAO {
 
         return User(id, name, email, password, token)
     }
-
 }

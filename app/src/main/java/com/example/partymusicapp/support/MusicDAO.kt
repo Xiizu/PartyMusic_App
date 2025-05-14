@@ -104,6 +104,23 @@ class MusicDAO {
         return deleted
     }
 
+    fun getLastId(): Int {
+        open()
+        val cursor = base.query("music", null, null, null, null, null, null)
+        var lastId = 0
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                if (id > lastId) {
+                    lastId = id
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        close()
+        return lastId + 1
+    }
+
     fun delete(music_id: Int) {
         base.delete("music", "id = ?", arrayOf(music_id.toString()))
     }
