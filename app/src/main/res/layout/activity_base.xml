@@ -59,7 +59,7 @@
                 android:background="?attr/colorPrimary"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="6dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -68,7 +68,8 @@
                     android:gravity="center_horizontal"
                     android:text="@string/button_create_room"
                     android:textColor="@android:color/white"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
 
                 <ImageButton
                     android:id="@+id/refresh_button"
@@ -77,15 +78,16 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/info_refresh"
                     android:src="@drawable/ic_refresh"
-                    app:tint="@android:color/white" />
+                    app:tint="@android:color/white"
+                    android:padding="10dp"/>
             </LinearLayout>
         </LinearLayout>
+        <ProgressBar
+            android:id="@+id/progress_spinner_drawer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
     </com.google.android.material.navigation.NavigationView>
-
-
-
-
-
-
 
 </androidx.drawerlayout.widget.DrawerLayout>

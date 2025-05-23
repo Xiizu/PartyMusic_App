@@ -41,4 +41,6 @@
     <string name="info_link">Open link</string>
     <string name="error_room_not_found">Party not found</string>
     <string name="home">Home</string>
+    <string name="error_no_music">No music found for this Party</string>
+    <string name="info_proposed">Music added by</string>
 </resources>

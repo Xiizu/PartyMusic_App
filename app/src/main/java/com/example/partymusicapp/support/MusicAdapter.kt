@@ -1,12 +1,12 @@
 package com.example.partymusicapp.support
 
 import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.partymusicapp.R
 import com.example.partymusicapp.model.Music
@@ -31,7 +31,7 @@ class MusicAdapter(private val items: MutableList<Music>) :
         holder.title.text = music.title
         holder.proposer.text = music.user_name
         holder.linkButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(music.link))
+            val intent = Intent(Intent.ACTION_VIEW, "https://youtu.be/${music.link}".toUri())
             it.context.startActivity(intent)
         }
     }
@@ -45,8 +45,16 @@ class MusicAdapter(private val items: MutableList<Music>) :
         }
     }
 
+    fun removeItem(music: Music) {
+        val index = items.indexOf(music)
+        if (index != -1) {
+            items.removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
+
     fun clear() {
         items.clear()
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0,items.size)
     }
 }

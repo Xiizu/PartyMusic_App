@@ -122,7 +122,9 @@ class MusicDAO {
     }
 
     fun delete(music_id: Int) {
+        open()
         base.delete("music", "id = ?", arrayOf(music_id.toString()))
+        close()
     }
 
     fun deleteRoom(room_id: Int) {

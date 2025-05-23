@@ -8,11 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
+        <!-- room view -->
         <LinearLayout
             android:orientation="vertical"
             android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <!-- room title -->
             <TextView
                 android:textSize="24sp"
                 android:layout_gravity="center"
@@ -20,22 +22,40 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Room name"/>
+            <!-- current music info -->
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <!-- title + proposer + like + redirect-->
                 <LinearLayout
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <TextView
-                        android:textSize="20sp"
-                        android:id="@+id/current_music_title"
+                    <!-- titre + proposer module -->
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Current Title"
-                        android:layout_weight="1"/>
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <!-- Titre -->
+                        <TextView
+                            android:textSize="20sp"
+                            android:id="@+id/current_music_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Current Title"/>
+                        <!-- Proposer -->
+                        <TextView
+                            android:textSize="14sp"
+                            android:textColor="@android:color/darker_gray"
+                            android:id="@+id/current_proposer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Proposer"/>
+                    </LinearLayout>
+                    <!-- like -->
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/like_current_button"
                         android:padding="0dp"
@@ -46,26 +66,43 @@
                         android:contentDescription="@string/info_like"
                         app:fabCustomSize="32dp"
                         app:srcCompat="@drawable/ic_heart_outline"/>
+                    <!-- redirect -->
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/link_current_button"
+                        android:background="@android:color/transparent"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:contentDescription="@string/info_link"
+                        app:fabCustomSize="32dp"
+                        app:srcCompat="@drawable/ic_link"/>
                 </LinearLayout>
+                <!-- progress bar user -->
                 <com.google.android.material.progressindicator.LinearProgressIndicator
                     android:id="@+id/current_progress_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:indeterminateTint="?attr/colorPrimary"
-                    android:layout_marginVertical="8dp"/>
+                    android:layout_marginVertical="8dp"
+                    android:paddingHorizontal="15dp"/>
+                <!-- progress bar host -->
+                <SeekBar
+                    android:id="@+id/music_seek_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp" />
+                <!-- author + duration module-->
                 <LinearLayout
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+                    <!-- Author module -->
                     <LinearLayout
                         android:gravity="start"
                         android:orientation="vertical"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1">
+                        <!-- Author -->
                         <TextView
                             android:textSize="16sp"
                             android:layout_gravity="start"
@@ -74,20 +111,14 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
                             android:text="Author name"/>
-                        <TextView
-                            android:textSize="16sp"
-                            android:layout_gravity="start"
-                            android:id="@+id/current_link"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Link"/>
                     </LinearLayout>
+                    <!-- duration module -->
                     <LinearLayout
                         android:gravity="end"
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
+                        <!-- duration -->
                         <TextView
                             android:textSize="16sp"
                             android:layout_gravity="center"
@@ -96,22 +127,17 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
                             android:text="Duration"/>
-                        <TextView
-                            android:textSize="16sp"
-                            android:layout_gravity="center"
-                            android:id="@+id/current_proposer"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Proposer"/>
                     </LinearLayout>
                 </LinearLayout>
+
+                <!-- previous + play/pause + next module -->
                 <LinearLayout
                     android:gravity="center_vertical"
                     android:layout_gravity="center"
                     android:orientation="horizontal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content" >
+                    <!-- previous -->
                     <ImageButton
                         android:layout_gravity="center"
                         android:id="@+id/previous_button"
@@ -119,13 +145,16 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:src="@drawable/ic_arrow_back"/>
+                    <!-- pause -->
                     <ImageButton
-                        android:layout_gravity="center"
                         android:id="@+id/pause_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_margin="8dp"
-                        android:src="@drawable/ic_pause"/>
+                        android:src="@drawable/ic_pause"
+                        android:visibility="gone"/>
+                    <!-- play -->
                     <ImageButton
                         android:layout_gravity="center"
                         android:id="@+id/play_button"
@@ -133,6 +162,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:src="@drawable/ic_play"/>
+                    <!-- next -->
                     <ImageButton
                         android:layout_gravity="center"
                         android:id="@+id/next_button"
@@ -143,12 +173,14 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- player -->
             <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
                 android:id="@+id/youtube_player_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:visibility="visible"
                 app:autoPlay="false" />
+
             <View
                 android:background="@android:color/darker_gray"
                 android:layout_width="match_parent"

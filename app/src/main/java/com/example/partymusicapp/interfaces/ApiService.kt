@@ -86,5 +86,4 @@ interface ApiService {
     @Headers("Authorization: Bearer $TOKEN")
     @POST("music/create")
     suspend fun addMusic(@Body request: AddMusicRequest) : Response<API_Response<Music>>
-
 }

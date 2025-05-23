@@ -13,6 +13,6 @@ data class Music (
     var user_name: String
 ) {
     override fun toString(): String {
-        return "Music -> id : '$id', title : '$title', artist : '$artist', duration : '$duration', likes : '${likes.toString()}', link : '$link', playable : '${playable.toString()}', room_id : '${room_id.toString()}', user_id : '${user_id.toString()}', user_name : '$user_name"
+        return "Music -> id : '$id', title : '$title', artist : '$artist', duration : '$duration', likes : '${likes}', link : '$link', playable : '${playable}', room_id : '${room_id}', user_id : '${user_id}', user_name : '$user_name'."
     }
 }

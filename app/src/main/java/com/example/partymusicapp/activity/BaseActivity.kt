@@ -1,15 +1,19 @@
 package com.example.partymusicapp.activity
 
+import android.content.Context
 import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -56,6 +60,7 @@ open class BaseActivity : AppCompatActivity() {
     lateinit var searchBar: TextInputEditText
     lateinit var roomRecycler: RecyclerView
     lateinit var roomAdapter: RoomAdapter
+    lateinit var progressBarDrawer : ProgressBar
 
     override fun setContentView(layoutResID: Int) {
         val drawer = layoutInflater.inflate(R.layout.activity_base, null)
@@ -97,12 +102,14 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     fun goToRoom(room: Room) {
+        progressBarDrawer.visibility = View.VISIBLE
         lifecycleScope.launch {
             fetchMusics(room.id)
             startActivity(Intent(this@BaseActivity, MainActivity::class.java).apply {
                 putExtra("ROOM_ID", room.id)
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             })
+            progressBarDrawer.visibility = View.GONE
         }
     }
 
@@ -122,9 +129,14 @@ open class BaseActivity : AppCompatActivity() {
                     "MainActivity",
                     "GetMusics Request Success - ${body.data.size} music fetched for room $roomId"
                 )
+            } else if (response.code() == 404 || response.message() == "No musics found for this room") {
+                Log.e("MainActivity", "GetMusics Request Error - ${response.body()?.message}")
+                musicDAO.init(this@BaseActivity)
+                musicDAO.open()
+                musicDAO.emptyRoom(roomId)
+                musicDAO.close()
             } else {
-                val message = body?.message ?: "Erreur inconnue"
-                Log.e("MainActivity", "GetMusics Request Error - $message")
+                Log.e("MainActivity", "GetMusics Request Error - $response")
             }
         } catch (e: Exception) {
             Log.e("MainActivity", "GetMusics Request Error - $e")
@@ -141,6 +153,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     private fun fetchRooms() {
+        progressBarDrawer.visibility = View.VISIBLE
         roomDAO.init(this)
         putAllRooms()
         lifecycleScope.launch {
@@ -164,6 +177,7 @@ open class BaseActivity : AppCompatActivity() {
                 Log.e("MainActivity", "GetUserRoom Request Error - $e")
             } finally {
                 putAllRooms()
+                progressBarDrawer.visibility = View.GONE
             }
         }
     }
@@ -212,6 +226,7 @@ open class BaseActivity : AppCompatActivity() {
         roomAdapter = RoomAdapter(this@BaseActivity, rooms)
         roomRecycler.adapter = roomAdapter
 
+        progressBarDrawer = findViewById(R.id.progress_spinner_drawer)
 
         fetchRooms()
         footerView = findViewById(R.id.footer)
@@ -302,4 +317,14 @@ open class BaseActivity : AppCompatActivity() {
     companion object {
         var shouldRecreate = false
     }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+            currentFocus!!.clearFocus()
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
 }

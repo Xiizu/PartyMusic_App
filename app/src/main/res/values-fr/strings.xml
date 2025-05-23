@@ -40,4 +40,6 @@
     <string name="info_link">Ouvrir le lien</string>
     <string name="error_room_not_found">Party introuvable</string>
     <string name="home">Accueil</string>
+    <string name="error_no_music">Aucune musique trouvée pour cette Party</string>
+    <string name="info_proposed">Musique ajoutée par</string>
 </resources>
