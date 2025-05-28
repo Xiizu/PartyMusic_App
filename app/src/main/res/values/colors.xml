@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="playingHighlight">#33FFFFFF</color>
 
+    <color name="buttonTint">#2363AD</color>
         <color name="primary">#2363AD</color> <!-- Bleu électrique -->
         <color name="buttonBackground">#75CFFF</color> <!-- Texte sur bouton -->
         <color name="secondary">#69D5FD</color> <!-- Rose doux -->

@@ -39,6 +39,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.util.Locale
 import androidx.core.content.res.ResourcesCompat
+import com.example.partymusicapp.support.YouTubeAPI
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -180,6 +181,22 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    private fun initoutubeApi() {
+        progressBarDrawer.visibility = View.VISIBLE
+        roomDAO.init(this)
+        putAllRooms()
+        lifecycleScope.launch {
+            try {
+                val response = YouTubeAPI.RetrofitClientYT.instanceYT.initApiRequest()
+                Log.i("BaseActivity", "Youtube API Request init")
+            } catch (e: Exception) {
+                Log.e("BaseActivity", "Youtube API Request Error - $e")
+            } finally {
+                Log.i("BaseActivity", "Youtube API Request ended")
+            }
+        }
+    }
+    
     private fun setupDrawer(): Boolean {
         userDAO.init(this)
         val connectedUser = userDAO.get()
@@ -244,6 +261,8 @@ open class BaseActivity : AppCompatActivity() {
         refreshButton.setOnClickListener {
             fetchRooms()
         }
+        
+        initoutubeApi()
 
         return true
     }

@@ -2,7 +2,7 @@ package com.example.partymusicapp.interfaces
 
 import com.example.partymusicapp.TOKEN
 import com.example.partymusicapp.model.API_Response
-import com.example.partymusicapp.model.Dev
+//import com.example.partymusicapp.model.Dev
 import com.example.partymusicapp.model.Music
 import com.example.partymusicapp.model.Room
 import com.example.partymusicapp.model.User
@@ -13,9 +13,9 @@ import retrofit2.http.POST
 
 
 interface ApiService {
-    @Headers("Authorization: Bearer $TOKEN")
-    @POST("ping")
-    suspend fun getPing(): Response<Dev>
+//    @Headers("Authorization: Bearer $TOKEN")
+//    @POST("ping")
+//    suspend fun getPing(): Response<Dev>
 
     // USER
     data class LoginRequest(

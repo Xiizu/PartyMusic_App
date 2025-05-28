@@ -75,7 +75,7 @@
                         android:padding="0dp"
                         app:fabCustomSize="32dp"
                         app:srcCompat="@drawable/ic_video"
-                        app:tint="@color/primary"
+                        app:tint="@color/buttonTint"
                         app:backgroundTint="@color/buttonBackground"/>
                     <!-- like -->
 <!--                    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
@@ -97,7 +97,7 @@
                         android:contentDescription="@string/info_link"
                         app:fabCustomSize="32dp"
                         app:srcCompat="@drawable/ic_link"
-                        app:tint="@color/primary"
+                        app:tint="@color/buttonTint"
                         app:backgroundTint="@color/buttonBackground"/>
                 </LinearLayout>
                 <!-- progress bar user -->
@@ -172,7 +172,9 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:src="@drawable/ic_arrow_back"
-                        android:contentDescription="backward music"/>
+                        android:contentDescription="backward music"
+                        app:tint="@color/buttonTint"
+                        app:backgroundTint="@color/buttonBackground"/>
                     <!-- pause -->
                     <ImageButton
                         android:id="@+id/pause_button"
@@ -182,7 +184,9 @@
                         android:layout_margin="8dp"
                         android:src="@drawable/ic_pause"
                         android:visibility="gone"
-                        android:contentDescription="pause button"/>
+                        android:contentDescription="pause button"
+                        app:tint="@color/buttonTint"
+                        app:backgroundTint="@color/buttonBackground"/>
                     <!-- play -->
                     <ImageButton
                         android:layout_gravity="center"
@@ -191,7 +195,9 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:src="@drawable/ic_play"
-                        android:contentDescription="play button"/>
+                        android:contentDescription="play button"
+                        app:tint="@color/buttonTint"
+                        app:backgroundTint="@color/buttonBackground"/>
                     <!-- next -->
                     <ImageButton
                         android:layout_gravity="center"
@@ -200,7 +206,9 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:src="@drawable/ic_arrow_next"
-                        android:contentDescription="forward music"/>
+                        android:contentDescription="forward music"
+                        app:tint="@color/buttonTint"
+                        app:backgroundTint="@color/buttonBackground"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -253,7 +261,7 @@
         android:contentDescription="@string/info_add_music"
         app:maxImageSize="48dp"
         app:srcCompat="@drawable/ic_add"
-        app:tint="@color/primary"
+        app:tint="@color/buttonTint"
         app:backgroundTint="@color/buttonBackground"/>
 
     <ProgressBar

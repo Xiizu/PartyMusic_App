@@ -2,6 +2,7 @@
 <resources>
     <color name="primary">#D83A83DB</color> <!-- Bleu plus doux -->
     <color name="secondary">#65EEFF</color> <!-- Rose atténué -->
+    <color name="buttonTint">#65EEFF</color> <!-- Texte sur bouton -->
     <color name="buttonBackground">#204695</color>
     <color name="background">#AC00FF</color> <!-- Fond sombre neutre -->
     <color name="surface">#1F1F1F</color> <!-- Cartes foncées -->
