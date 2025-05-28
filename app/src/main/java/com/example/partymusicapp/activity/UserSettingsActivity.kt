@@ -1,8 +1,6 @@
 package com.example.partymusicapp.activity
 
-import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.view.ViewCompat
@@ -32,9 +30,18 @@ class UserSettingsActivity : BaseActivity() {
         logoutButton = findViewById<Button>(R.id.button_logout)
         logoutButton.setOnClickListener {
             Toast.makeText(this, getString(R.string.info_logout), Toast.LENGTH_SHORT).show()
+            userDAO.init(this)
             userDAO.open()
             userDAO.empty()
             userDAO.close()
+            musicDAO.init(this)
+            musicDAO.open()
+            musicDAO.empty()
+            musicDAO.close()
+            roomDAO.init(this)
+            roomDAO.open()
+            roomDAO.empty()
+            roomDAO.close()
             recreate()
         }
     }

@@ -2,7 +2,7 @@ package com.example.partymusicapp.interfaces
 
 import com.example.partymusicapp.TOKEN
 import com.example.partymusicapp.model.API_Response
-import com.example.partymusicapp.model.Dev
+//import com.example.partymusicapp.model.Dev
 import com.example.partymusicapp.model.Music
 import com.example.partymusicapp.model.Room
 import com.example.partymusicapp.model.User
@@ -10,13 +10,12 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
-import kotlin.coroutines.Continuation
 
 
 interface ApiService {
-    @Headers("Authorization: Bearer $TOKEN")
-    @POST("ping")
-    suspend fun getPing(): Response<Dev>
+//    @Headers("Authorization: Bearer $TOKEN")
+//    @POST("ping")
+//    suspend fun getPing(): Response<Dev>
 
     // USER
     data class LoginRequest(
@@ -69,12 +68,12 @@ interface ApiService {
     @POST("music/get")
     suspend fun getMusic(@Body request: GetMusicRequest) : Response<API_Response<ArrayList<Music>>>
 
-    data class AllMusicRequest(
-        val user_id : Int
-    )
-    @Headers("Authorization: Bearer $TOKEN")
-    @POST("music/get")
-    suspend fun allMusic(@Body request: AllMusicRequest) : Response<API_Response<ArrayList<Music>>>
+//    data class AllMusicRequest(
+//        val user_id : Int
+//    )
+//    @Headers("Authorization: Bearer $TOKEN")
+//    @POST("music/get")
+//    suspend fun allMusic(@Body request: AllMusicRequest) : Response<API_Response<ArrayList<Music>>>
 
     data class AddMusicRequest(
         val room_id : Int,
@@ -86,5 +85,4 @@ interface ApiService {
     @Headers("Authorization: Bearer $TOKEN")
     @POST("music/create")
     suspend fun addMusic(@Body request: AddMusicRequest) : Response<API_Response<Music>>
-
 }

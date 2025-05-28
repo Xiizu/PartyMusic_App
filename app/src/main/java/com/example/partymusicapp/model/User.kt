@@ -1,4 +1,4 @@
-package com.example.partymusicapp.model;
+package com.example.partymusicapp.model
 
 data class User (
     val id: Int,
@@ -8,6 +8,6 @@ data class User (
     var token: String)
 {
     override fun toString(): String {
-        return "User -> id : '$id', name : '$name', email : '$email', password : '$password', token : '$token"
+        return "User -> id : '$id', name : '$name', email : '$email', password : '$password', token : '$token'"
     }
 }

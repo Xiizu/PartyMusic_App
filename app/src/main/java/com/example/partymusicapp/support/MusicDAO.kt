@@ -3,7 +3,6 @@ package com.example.partymusicapp.support
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import com.example.partymusicapp.model.Music
 
 class MusicDAO {
@@ -39,7 +38,7 @@ class MusicDAO {
         values.put("room_id", music.room_id)
         values.put("user_name", music.user_name)
         values.put("user_id", music.user_id)
-        val result = base.insert("music", null, values).toInt()
+        val result = base.insertWithOnConflict("music", null, values, SQLiteDatabase.CONFLICT_REPLACE).toInt()
         close()
         return result != -1
     }
@@ -122,7 +121,9 @@ class MusicDAO {
     }
 
     fun delete(music_id: Int) {
+        open()
         base.delete("music", "id = ?", arrayOf(music_id.toString()))
+        close()
     }
 
     fun deleteRoom(room_id: Int) {

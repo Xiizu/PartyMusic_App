@@ -1,0 +1,13 @@
+<!-- res/drawable/gradient_animated_simulated.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+<gradient
+    android:type="radial"
+    android:centerX="0.5"
+    android:centerY="0.5"
+    android:gradientRadius="1600"
+    android:startColor="#76B0F8"
+    android:endColor="#FFFFFF" />
+<stroke
+    android:width="0.5dp"
+    android:color="#55FFFFFF" />       <!-- bordure glassmorphism claire -->
+</shape>

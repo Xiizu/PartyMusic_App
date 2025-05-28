@@ -1,20 +1,10 @@
 package com.example.partymusicapp.interfaces
 
-import com.example.partymusicapp.TOKEN
 import com.example.partymusicapp.YT_API_KEY
-import com.example.partymusicapp.model.API_Response
-import com.example.partymusicapp.model.Dev
-import com.example.partymusicapp.model.Music
-import com.example.partymusicapp.model.Room
-import com.example.partymusicapp.model.User
 import com.example.partymusicapp.model.YouTubeSearchResponse
 import retrofit2.Response
-import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.POST
 import retrofit2.http.Query
-import kotlin.coroutines.Continuation
 
 
 interface ApiServiceYT {

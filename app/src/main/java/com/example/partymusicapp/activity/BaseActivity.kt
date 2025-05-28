@@ -1,21 +1,23 @@
 package com.example.partymusicapp.activity
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
-import android.view.Menu
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -23,7 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.partymusicapp.MainActivity
 import com.example.partymusicapp.R
-import com.example.partymusicapp.adapter.RoomAdapter
+import com.example.partymusicapp.support.RoomAdapter
 import com.example.partymusicapp.interfaces.ApiService
 import com.example.partymusicapp.model.Room
 import com.example.partymusicapp.model.User
@@ -33,10 +35,11 @@ import com.example.partymusicapp.support.MusicDAO
 import com.example.partymusicapp.support.RoomDAO
 import com.example.partymusicapp.support.UserDAO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.util.Locale
+import androidx.core.content.res.ResourcesCompat
+import com.example.partymusicapp.support.YouTubeAPI
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -44,7 +47,7 @@ open class BaseActivity : AppCompatActivity() {
     lateinit var user: User
     val roomDAO = RoomDAO()
     lateinit var rooms: ArrayList<Room>
-    var currentRoom: Room? = null
+   // var currentRoom: Room? = null
     val musicDAO = MusicDAO()
 
     lateinit var drawerLayout: DrawerLayout
@@ -56,13 +59,14 @@ open class BaseActivity : AppCompatActivity() {
     lateinit var searchBar: TextInputEditText
     lateinit var roomRecycler: RecyclerView
     lateinit var roomAdapter: RoomAdapter
+    lateinit var progressBarDrawer : ProgressBar
 
     override fun setContentView(layoutResID: Int) {
         val drawer = layoutInflater.inflate(R.layout.activity_base, null)
         val container = drawer.findViewById<FrameLayout>(R.id.base_content)
         layoutInflater.inflate(layoutResID, container, true)
         super.setContentView(drawer)
-        window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
+        //window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
         rooms = ArrayList()
 
@@ -97,12 +101,14 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     fun goToRoom(room: Room) {
+        progressBarDrawer.visibility = View.VISIBLE
         lifecycleScope.launch {
             fetchMusics(room.id)
             startActivity(Intent(this@BaseActivity, MainActivity::class.java).apply {
                 putExtra("ROOM_ID", room.id)
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             })
+            progressBarDrawer.visibility = View.GONE
         }
     }
 
@@ -122,9 +128,14 @@ open class BaseActivity : AppCompatActivity() {
                     "MainActivity",
                     "GetMusics Request Success - ${body.data.size} music fetched for room $roomId"
                 )
+            } else if (response.code() == 404 || response.message() == "No musics found for this room") {
+                Log.e("MainActivity", "GetMusics Request Error - ${response.body()?.message}")
+                musicDAO.init(this@BaseActivity)
+                musicDAO.open()
+                musicDAO.emptyRoom(roomId)
+                musicDAO.close()
             } else {
-                val message = body?.message ?: "Erreur inconnue"
-                Log.e("MainActivity", "GetMusics Request Error - $message")
+                Log.e("MainActivity", "GetMusics Request Error - $response")
             }
         } catch (e: Exception) {
             Log.e("MainActivity", "GetMusics Request Error - $e")
@@ -141,6 +152,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     private fun fetchRooms() {
+        progressBarDrawer.visibility = View.VISIBLE
         roomDAO.init(this)
         putAllRooms()
         lifecycleScope.launch {
@@ -164,10 +176,27 @@ open class BaseActivity : AppCompatActivity() {
                 Log.e("MainActivity", "GetUserRoom Request Error - $e")
             } finally {
                 putAllRooms()
+                progressBarDrawer.visibility = View.GONE
             }
         }
     }
 
+    private fun initoutubeApi() {
+        progressBarDrawer.visibility = View.VISIBLE
+        roomDAO.init(this)
+        putAllRooms()
+        lifecycleScope.launch {
+            try {
+                val response = YouTubeAPI.RetrofitClientYT.instanceYT.initApiRequest()
+                Log.i("BaseActivity", "Youtube API Request init")
+            } catch (e: Exception) {
+                Log.e("BaseActivity", "Youtube API Request Error - $e")
+            } finally {
+                Log.i("BaseActivity", "Youtube API Request ended")
+            }
+        }
+    }
+    
     private fun setupDrawer(): Boolean {
         userDAO.init(this)
         val connectedUser = userDAO.get()
@@ -195,6 +224,10 @@ open class BaseActivity : AppCompatActivity() {
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+        val isDarkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        val iconColor = if (isDarkTheme) R.color.white else R.color.black
+        toggle.drawerArrowDrawable.color = ResourcesCompat.getColor(resources, iconColor, null)
+
 
         titleText = findViewById(R.id.header_title)
         searchBar = findViewById(R.id.search_bar)
@@ -212,6 +245,7 @@ open class BaseActivity : AppCompatActivity() {
         roomAdapter = RoomAdapter(this@BaseActivity, rooms)
         roomRecycler.adapter = roomAdapter
 
+        progressBarDrawer = findViewById(R.id.progress_spinner_drawer)
 
         fetchRooms()
         footerView = findViewById(R.id.footer)
@@ -227,6 +261,8 @@ open class BaseActivity : AppCompatActivity() {
         refreshButton.setOnClickListener {
             fetchRooms()
         }
+        
+        initoutubeApi()
 
         return true
     }
@@ -302,4 +338,14 @@ open class BaseActivity : AppCompatActivity() {
     companion object {
         var shouldRecreate = false
     }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+            currentFocus!!.clearFocus()
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
 }

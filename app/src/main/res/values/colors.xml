@@ -2,4 +2,20 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="playingHighlight">#33FFFFFF</color>
+
+    <color name="buttonTint">#2363AD</color>
+        <color name="primary">#2363AD</color> <!-- Bleu électrique -->
+        <color name="buttonBackground">#75CFFF</color> <!-- Texte sur bouton -->
+        <color name="secondary">#69D5FD</color> <!-- Rose doux -->
+        <color name="background">#FFFFFF</color> <!-- Fond clair neutre -->
+        <color name="surface">#FFFFFF</color> <!-- Cartes et éléments -->
+        <color name="onPrimary">#000000</color> <!-- Texte sur bouton -->
+        <color name="onBackground">#0F0F0F</color> <!-- Texte global -->
+        <color name="onSurface">#1E1E1E</color> <!-- Texte sur cartes -->
+        <color name="bright">#FFFFFF</color> <!-- Erreur -->
+        <color name="dark">#000000</color>
+        <color name="hidden">#505050</color>
+
+
 </resources>

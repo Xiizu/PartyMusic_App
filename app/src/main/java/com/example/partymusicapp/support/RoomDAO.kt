@@ -3,31 +3,29 @@ package com.example.partymusicapp.support
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import com.example.partymusicapp.model.Room
-import com.example.partymusicapp.model.User
 
 class RoomDAO {
     lateinit var base: SQLiteDatabase
     lateinit var localDatabase: LocalDatabase
 
-    public fun init(context: Context) {
+    fun init(context: Context) {
         localDatabase = LocalDatabase(context)
     }
 
-    public fun open() {
+    fun open() {
         base = localDatabase.writableDatabase
     }
 
-    public fun close() {
+    fun close() {
         base.close()
     }
 
-    public fun empty() {
+    fun empty() {
         base.delete("room", null, null)
     }
 
-    public fun insert(room: Room) : Boolean {
+    fun insert(room: Room) : Boolean {
         open()
         val values = ContentValues()
         values.put("id", room.id)
@@ -41,7 +39,7 @@ class RoomDAO {
         return result != -1
     }
 
-    public fun get(room_id : Int) : Room? {
+    fun get(room_id : Int) : Room? {
         open()
         val cursor = base.query("room", null, null, null, null, null, null) // Récupérer les room existantes
         if (cursor.moveToFirst()) {
@@ -64,7 +62,7 @@ class RoomDAO {
         return null
     }
 
-    public fun index() : ArrayList<Room> {
+    fun index() : ArrayList<Room> {
         open()
         val cursor = base.query("room", null, null, null, null, null, null) // Récupérer les room existantes
         val rooms = ArrayList<Room>()
@@ -84,7 +82,7 @@ class RoomDAO {
         return rooms
     }
 
-    public fun delete(room_id : Int) {
+    fun delete(room_id : Int) {
         base.delete("room", "id = ?", arrayOf(room_id.toString()))
     }
 

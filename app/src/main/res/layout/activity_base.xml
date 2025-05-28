@@ -9,10 +9,11 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.appcompat.widget.Toolbar
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:id="@+id/toolbar"
-            android:background="?attr/colorPrimary"
+            android:background="@drawable/gradiant_one"
             android:fitsSystemWindows="true"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"/>
@@ -56,10 +57,10 @@
                 android:id="@+id/footer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
+                android:background="@drawable/gradiant_one"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="6dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -67,8 +68,9 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="@string/button_create_room"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp" />
+                    android:textColor="@color/dark"
+                    android:textSize="14sp"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
 
                 <ImageButton
                     android:id="@+id/refresh_button"
@@ -77,15 +79,16 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/info_refresh"
                     android:src="@drawable/ic_refresh"
-                    app:tint="@android:color/white" />
+                    app:tint="@color/dark"
+                    android:padding="10dp"/>
             </LinearLayout>
         </LinearLayout>
+        <ProgressBar
+            android:id="@+id/progress_spinner_drawer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
     </com.google.android.material.navigation.NavigationView>
-
-
-
-
-
-
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:background="?attr/colorPrimary"
+    android:background="@drawable/gradiant_two"
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="160dp">
@@ -15,7 +15,7 @@
         <TextView
             android:textSize="32sp"
             android:textStyle="bold"
-            android:textColor="@android:color/white"
+            android:textColor="@color/dark"
             android:gravity="center_horizontal"
             android:id="@+id/header_title"
             android:layout_width="0dp"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_settings"
             android:contentDescription="@string/action_settings"
-            app:tint="@android:color/white"/>
+            app:tint="@color/dark"/>
     </LinearLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/search_container"

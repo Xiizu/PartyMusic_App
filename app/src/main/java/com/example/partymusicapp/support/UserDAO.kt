@@ -9,23 +9,23 @@ class UserDAO {
     lateinit var base: SQLiteDatabase
     lateinit var localDatabase: LocalDatabase
 
-    public fun init(context: Context) {
+    fun init(context: Context) {
         localDatabase = LocalDatabase(context)
     }
 
-    public fun open() {
+    fun open() {
         base = localDatabase.writableDatabase
     }
 
-    public fun close() {
+    fun close() {
         base.close()
     }
 
-    public fun empty() {
+    fun empty() {
         base.delete("user", null, null)
     }
 
-    public fun insert(user: User?) : Boolean {
+    fun insert(user: User?) : Boolean {
         open()
         empty() // Vider la table avant d'insérer un nouvel utilisateur pour ne garder que celui qui est connécté
         val values = ContentValues()
@@ -39,7 +39,7 @@ class UserDAO {
         return result != -1
     }
 
-    public fun get() : User? {
+    fun get() : User? {
         open()
         val cursor = base.query("user", null, null, null, null, null, null) // Récupérer le seul utilisateur connecté
         if (cursor.count == 0 || !cursor.moveToFirst()) {
