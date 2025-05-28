@@ -21,12 +21,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Title"
+        android:textColor="@color/dark"
         app:layout_constraintEnd_toStartOf="@+id/link_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
     <TextView
         android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@color/hidden"
         android:id="@+id/music_proposer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -36,7 +37,7 @@
         app:layout_constraintStart_toStartOf="@+id/music_title"
         app:layout_constraintTop_toBottomOf="@+id/music_title"/>
     <View
-        android:background="@android:color/darker_gray"
+        android:background="@color/hidden"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"

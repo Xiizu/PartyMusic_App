@@ -22,18 +22,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Room name"/>
+            <!-- room code -->
+            <TextView
+                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:id="@+id/room_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Room code"/>
             <!-- current music info -->
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:id="@+id/current_music_info">
                 <!-- title + proposer + like + redirect-->
                 <LinearLayout
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                    <!-- titre + proposer module -->
+                    <!-- titre + proposer + player module -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -49,23 +58,36 @@
                         <!-- Proposer -->
                         <TextView
                             android:textSize="14sp"
-                            android:textColor="@android:color/darker_gray"
+                            android:textColor="@color/hidden"
                             android:id="@+id/current_proposer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Proposer"/>
                     </LinearLayout>
-                    <!-- like -->
+                    <!-- show player -->
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/like_current_button"
-                        android:padding="0dp"
-                        android:focusable="true"
-                        android:clickable="true"
+                        android:id="@+id/show_video_button"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:contentDescription="@string/info_like"
+                        android:clickable="true"
+                        android:contentDescription="show video"
+                        android:focusable="true"
+                        android:padding="0dp"
                         app:fabCustomSize="32dp"
-                        app:srcCompat="@drawable/ic_heart_outline"/>
+                        app:srcCompat="@drawable/ic_video"
+                        app:tint="@color/primary"
+                        app:backgroundTint="@color/buttonBackground"/>
+                    <!-- like -->
+<!--                    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                        android:id="@+id/like_current_button"-->
+<!--                        android:padding="0dp"-->
+<!--                        android:focusable="true"-->
+<!--                        android:clickable="true"-->
+<!--                        android:layout_width="32dp"-->
+<!--                        android:layout_height="32dp"-->
+<!--                        android:contentDescription="@string/info_like"-->
+<!--                        app:fabCustomSize="32dp"-->
+<!--                        app:srcCompat="@drawable/ic_heart_outline"/>-->
                     <!-- redirect -->
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/link_current_button"
@@ -74,27 +96,32 @@
                         android:layout_height="32dp"
                         android:contentDescription="@string/info_link"
                         app:fabCustomSize="32dp"
-                        app:srcCompat="@drawable/ic_link"/>
+                        app:srcCompat="@drawable/ic_link"
+                        app:tint="@color/primary"
+                        app:backgroundTint="@color/buttonBackground"/>
                 </LinearLayout>
                 <!-- progress bar user -->
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/current_progress_spinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp"
-                    android:paddingHorizontal="15dp"/>
+<!--                <com.google.android.material.progressindicator.LinearProgressIndicator-->
+<!--                    android:id="@+id/current_progress_spinner"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginVertical="8dp"-->
+<!--                    android:paddingHorizontal="15dp"/>-->
                 <!-- progress bar host -->
                 <SeekBar
                     android:id="@+id/music_seek_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp" />
+                    android:layout_marginVertical="8dp"
+                    android:progressTint="@color/primary"
+                    android:thumbTint="@color/primary"/>
                 <!-- author + duration module-->
                 <LinearLayout
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="true">
                     <!-- Author module -->
                     <LinearLayout
                         android:gravity="start"
@@ -144,7 +171,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:src="@drawable/ic_arrow_back"/>
+                        android:src="@drawable/ic_arrow_back"
+                        android:contentDescription="backward music"/>
                     <!-- pause -->
                     <ImageButton
                         android:id="@+id/pause_button"
@@ -153,7 +181,8 @@
                         android:layout_gravity="center"
                         android:layout_margin="8dp"
                         android:src="@drawable/ic_pause"
-                        android:visibility="gone"/>
+                        android:visibility="gone"
+                        android:contentDescription="pause button"/>
                     <!-- play -->
                     <ImageButton
                         android:layout_gravity="center"
@@ -161,7 +190,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:src="@drawable/ic_play"/>
+                        android:src="@drawable/ic_play"
+                        android:contentDescription="play button"/>
                     <!-- next -->
                     <ImageButton
                         android:layout_gravity="center"
@@ -169,20 +199,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:src="@drawable/ic_arrow_next"/>
+                        android:src="@drawable/ic_arrow_next"
+                        android:contentDescription="forward music"/>
                 </LinearLayout>
             </LinearLayout>
 
             <!-- player -->
-            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-                android:id="@+id/youtube_player_view"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:visibility="visible"
-                app:autoPlay="false" />
+<!--            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView-->
+<!--                android:id="@+id/youtube_player_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:visibility="visible"-->
+<!--                app:autoPlay="false" />-->
+
+
 
             <View
-                android:background="@android:color/darker_gray"
+                android:background="@color/hidden"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
@@ -194,11 +227,18 @@
                 app:cardElevation="4dp"
                 app:cardPreventCornerOverlap="false"
                 app:cardUseCompatPadding="true">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/gradiant_three"
+                    android:padding="10dp">
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/next_music_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"/>
+                </FrameLayout>
+
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </ScrollView>
@@ -212,7 +252,9 @@
         android:layout_margin="32dp"
         android:contentDescription="@string/info_add_music"
         app:maxImageSize="48dp"
-        app:srcCompat="@drawable/ic_add"/>
+        app:srcCompat="@drawable/ic_add"
+        app:tint="@color/primary"
+        app:backgroundTint="@color/buttonBackground"/>
 
     <ProgressBar
         android:id="@+id/progress_spinner"
@@ -225,7 +267,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:id="@+id/no_room_layout"
-        android:visibility="gone">
+        android:visibility="visible">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -250,6 +292,24 @@
         </LinearLayout>
     </FrameLayout>
 
+    <FrameLayout
+        android:id="@+id/player_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#C0000000"
+        android:alpha="0"
+        android:clickable="false"
+        android:focusable="false"
+        android:visibility="invisible">
 
+        <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+            android:id="@+id/youtube_player_view"
+            android:elevation="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            app:autoPlay="false" />
+    </FrameLayout>
 </FrameLayout>
 

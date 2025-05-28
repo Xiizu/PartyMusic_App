@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#D83A83DB</color> <!-- Bleu plus doux -->
+    <color name="secondary">#65EEFF</color> <!-- Rose atténué -->
+    <color name="buttonBackground">#204695</color>
+    <color name="background">#AC00FF</color> <!-- Fond sombre neutre -->
+    <color name="surface">#1F1F1F</color> <!-- Cartes foncées -->
+    <color name="onPrimary">#FFFFFF</color>
+    <color name="onBackground">#EDEDED</color>
+    <color name="onSurface">#898989</color>
+    <color name="bright">#000000</color>
+    <color name="dark">#FFFFFF</color>
+    <color name="hidden">#737373</color>
+</resources>

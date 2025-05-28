@@ -1,7 +1,7 @@
 package com.example.partymusicapp
 
 import android.content.Intent
-import android.media.AudioManager
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,10 +19,12 @@ import com.example.partymusicapp.support.ActivityTracker
 import com.example.partymusicapp.support.MusicAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.SeekBar
@@ -45,10 +47,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.partymusicapp.support.OnYouTubeVideoClickListener
-import com.google.android.material.progressindicator.LinearProgressIndicator
+//import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.withContext
 import java.util.Locale
-
 
 class MainActivity : BaseActivity() {
 
@@ -64,30 +65,23 @@ class MainActivity : BaseActivity() {
     private lateinit var previousButton : ImageButton
     private lateinit var roomLayout : ScrollView
     private lateinit var noRoomLayout : FrameLayout
+    private lateinit var createRoomButton : Button
 
-    private lateinit var audioManager: AudioManager
+    private lateinit var showVideoButton: FloatingActionButton
 
-    private val focusChangeListener: AudioManager.OnAudioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
-            when (focusChange) {
-                AudioManager.AUDIOFOCUS_GAIN -> currentYouTubePlayer?.play()
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
-                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> currentYouTubePlayer?.pause()
-                AudioManager.AUDIOFOCUS_LOSS -> {
-                    currentYouTubePlayer?.pause()
-                    audioManager.abandonAudioFocus(focusChangeListener)
-                }
-            }
-        }
+    private lateinit var roomCode : TextView
 
     private var videoStarted = false
     private var currentYouTubePlayer: YouTubePlayer? = null
+
+    private lateinit var currentMusicLayout : LinearLayout
 
     private lateinit var currentAuthor : TextView
     private lateinit var currentTitle : TextView
     private lateinit var currentDuration : TextView
     private lateinit var currentProposer : TextView
     private lateinit var currentLink : FloatingActionButton
-    private lateinit var progressBar : LinearProgressIndicator
+    //private lateinit var progressBar : LinearProgressIndicator
     private lateinit var progressBarEditable : SeekBar
 
     private lateinit var currentPlayingMusic : Music
@@ -102,12 +96,12 @@ class MainActivity : BaseActivity() {
 
     private var currentRoomId = -1
 
+    private lateinit var playerContainer : FrameLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityTracker.register(this)
-
         setContentView(R.layout.activity_main)
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
             val systemBars: Insets = insets.getInsets(Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -124,13 +118,17 @@ class MainActivity : BaseActivity() {
         currentLink = findViewById(R.id.link_current_button)
         currentDuration = findViewById(R.id.current_duration)
         currentProposer = findViewById(R.id.current_proposer)
-        progressBar = findViewById(R.id.current_progress_spinner)
+        //progressBar = findViewById(R.id.current_progress_spinner)
         progressBarEditable = findViewById(R.id.music_seek_bar)
+        currentMusicLayout = findViewById(R.id.current_music_info)
 
-        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+        showVideoButton = findViewById(R.id.show_video_button)
 
         roomLayout = findViewById(R.id.room_layout)
         noRoomLayout = findViewById(R.id.no_room_layout)
+        createRoomButton = noRoomLayout.findViewById<Button>(R.id.create_room_button)
+
+        roomCode = findViewById(R.id.room_code)
 
         musicDAO.init(this)
         recyclerView = findViewById(R.id.next_music_list)
@@ -141,7 +139,7 @@ class MainActivity : BaseActivity() {
         progressSpinner.visibility = View.GONE
         addMusicButton = findViewById(R.id.create_music_button)
         roomName = findViewById(R.id.room_name)
-        update()
+
 
         var currentTotalTime = 1f
         var currentFormatedTotalTime = "00:00"
@@ -152,13 +150,13 @@ class MainActivity : BaseActivity() {
             }
             override fun onApiChange(youTubePlayer: YouTubePlayer) {}
             override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
-                progressBar.max = currentTotalTime.toInt()
+                //progressBar.max = currentTotalTime.toInt()
                 progressBarEditable.max = currentTotalTime.toInt()
-                progressBar.progress = second.toInt()
+                //progressBar.progress = second.toInt()
                 progressBarEditable.progress = second.toInt()
                 val onePercent = (second / currentTotalTime) * 100
                 if (onePercent >= 99f) {
-                    progressBar.progress = 0
+                    //progressBar.progress = 0
                     progressBarEditable.progress = 0
                     handlePlaylist()
                 }
@@ -197,7 +195,6 @@ class MainActivity : BaseActivity() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-
         playButton.setOnClickListener {
             if (musics.isNotEmpty()) {
                 playMusic()
@@ -223,14 +220,26 @@ class MainActivity : BaseActivity() {
         noMusicFound =  Music(10000,"Music Title","Author Name","00:00","9QbudSq30bo",0,1,1,1,"Mr.Tester")
         currentPlayingMusic = noMusicFound
         musics = mutableListOf(currentPlayingMusic)
+
+        playerContainer = findViewById<FrameLayout>(R.id.player_container)
+
+        update()
     }
 
     private fun handlePlaylist(forward : Boolean = true){
         if (musics.isNotEmpty()) {
-            var newId = musics.indexOf(currentPlayingMusic)
-            if (forward) {newId += 1} else {newId -= 1}
-            if (newId >= musics.size) {newId = 0} else if (newId < 0) {newId = musics.size - 1}
-            currentPlayingMusic = musics[newId]
+            if (musics.size > 1) {
+                if (forward) {
+                    musics.removeAt(0)
+                    musics.add(currentPlayingMusic)
+                    adapter.notifyItemMoved(0, musics.size - 1)
+                } else {
+                    musics.add(0, musics[musics.size - 1])
+                    musics.removeAt(musics.size - 1)
+                    adapter.notifyItemMoved(musics.size - 1, 0)
+                }
+            }
+            currentPlayingMusic = musics[0]
             videoStarted = false
             displayMusic(currentPlayingMusic)
             playMusic()
@@ -287,11 +296,14 @@ class MainActivity : BaseActivity() {
                     playable = 1,
                     user_id = userDAO.get()!!.id,
                     room_id = roomDAO.get(intent.getIntExtra("ROOM_ID", -1))!!.id,
-                    user_name = userDAO.get()!!.name)
+                    user_name = userDAO.get()!!.name
+                )
+
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val response = RetrofitClient.instance.addMusic(ApiService.AddMusicRequest(musique.room_id, musique.user_id, musique.title, musique.artist, musique.link))
                         val body = response.body()
+                        Log.d("YouTubeVideoDebug", "videoId=${video.id.videoId}, title=${video.snippet.title}")
                         if (body != null && body.statut == "success") {
                             withContext(Dispatchers.Main) {
                                 musicDAO.insert(musique)
@@ -341,7 +353,8 @@ class MainActivity : BaseActivity() {
                     if (body != null && body.items.isNotEmpty()) {
                         searchEditText.text.clear()
                         searchAdapter.clear()
-                        for (item in body.items) {
+                        val items = body.items.filter { !it.id?.videoId.isNullOrEmpty() }
+                        for (item in items) {
                             searchAdapter.addItem(item)
                             searchAdapter.notifyItemInserted(searchAdapter.itemCount - 1)
                         }
@@ -360,11 +373,31 @@ class MainActivity : BaseActivity() {
         dialog.show()
     }
 
+    private fun showPlayer() {
+        playerContainer.animate()
+            .alpha(1f)
+            .setDuration(200)
+            .withStartAction {
+                playerContainer.visibility = View.VISIBLE
+                playerContainer.isClickable = true
+                playerContainer.isFocusable = true
+            }
+            .start()
+    }
+
+    private fun hidePlayer() {
+        playerContainer.animate()
+            .alpha(0f)
+            .setDuration(200)
+            .withEndAction {
+                playerContainer.isClickable = false
+                playerContainer.isFocusable = false
+                playerContainer.visibility = View.INVISIBLE
+            }
+            .start()
+    }
+
     private fun displayRoomView(room: Room) {
-        roomLayout.visibility = View.VISIBLE
-        progressSpinner.visibility = View.GONE
-        addMusicButton.visibility = View.VISIBLE
-        noRoomLayout.visibility = View.GONE
         if (room.host_id != user.id) {
             isHost = false
             playButton.visibility = View.GONE
@@ -373,7 +406,8 @@ class MainActivity : BaseActivity() {
             previousButton.visibility = View.GONE
             youTubePlayerView.visibility = View.GONE
             progressBarEditable.visibility = View.GONE
-            progressBar.visibility = View.VISIBLE
+            currentMusicLayout.visibility = View.GONE
+            //progressBar.visibility = View.GONE
         }
         else {
             isHost = true
@@ -383,11 +417,13 @@ class MainActivity : BaseActivity() {
             previousButton.visibility = View.VISIBLE
             youTubePlayerView.visibility = View.VISIBLE
             progressBarEditable.visibility = View.VISIBLE
-            progressBar.visibility = View.GONE
+            currentMusicLayout.visibility = View.VISIBLE
+            //progressBar.visibility = View.GONE
         }
         roomName.text = room.label
         musicDAO.open()
         musics = musicDAO.index(room.id)
+        roomCode.text = "Code : ${room.code}"
         adapter.clear()
         musics.forEach { music ->
             adapter.addItem(music)
@@ -402,18 +438,19 @@ class MainActivity : BaseActivity() {
             displayMusic(noMusicFound)
             Toast.makeText(this, getString(R.string.error_no_music), Toast.LENGTH_SHORT).show()
         }
-
         addMusicButton.setOnClickListener {
             showSearchModal()
+        }
+        showVideoButton.setOnClickListener {
+            showPlayer()
+        }
+        playerContainer.setOnClickListener {
+            hidePlayer()
         }
     }
 
     private fun displayNullView() {
-        roomLayout.visibility = View.GONE
-        progressSpinner.visibility = View.GONE
-        addMusicButton.visibility = View.GONE
-        noRoomLayout.visibility = View.VISIBLE
-        noRoomLayout.findViewById<Button>(R.id.create_room_button).setOnClickListener {
+        createRoomButton.setOnClickListener {
             val intent = Intent(this, CreateRoomActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
@@ -421,6 +458,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun update() {
+        adapter.notifyDataSetChanged()
         val roomId = intent.getIntExtra("ROOM_ID", -1)
         currentRoomId = roomId
         val fetchedRoom = if (roomId != -1) roomDAO.get(roomId) else null
@@ -430,6 +468,21 @@ class MainActivity : BaseActivity() {
         } else {
             Log.i("MainActivity", "Room found: ${fetchedRoom.label}")
             displayRoomView(fetchedRoom)
+        }
+        val hasJoinedRoom = currentRoomId != -1
+        if (hasJoinedRoom) {
+            roomLayout.visibility = View.VISIBLE
+            noRoomLayout.visibility = View.GONE
+            progressSpinner.visibility = View.GONE
+            addMusicButton.visibility = View.VISIBLE
+        } else {
+            roomLayout.visibility = View.GONE
+            noRoomLayout.visibility = View.VISIBLE
+            addMusicButton.visibility = View.GONE
+            playerContainer.visibility = View.GONE
+            progressSpinner.visibility = View.GONE
+            currentMusicLayout.visibility = View.GONE
+            createRoomButton.isEnabled = true
         }
     }
 
@@ -509,7 +562,7 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
-        audioManager.abandonAudioFocus(focusChangeListener)
+        //audioManager.abandonAudioFocus(focusChangeListener)
         super.onDestroy()
         ActivityTracker.unregister(this)
     }
@@ -552,5 +605,22 @@ class MainActivity : BaseActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (playerContainer.alpha == 1f && !isTouchInsideView(
+                ev, playerContainer
+            )
+        ) {
+            hidePlayer()
+            return true
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    fun isTouchInsideView(ev: MotionEvent, view: View): Boolean {
+        val rect = Rect()
+        view.getGlobalVisibleRect(rect)
+        return rect.contains(ev.rawX.toInt(), ev.rawY.toInt())
     }
 }

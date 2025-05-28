@@ -1,11 +1,13 @@
 package com.example.partymusicapp.support
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.partymusicapp.R
@@ -26,6 +28,13 @@ class MusicAdapter(private val items: MutableList<Music>) :
         return MusicViewHolder(view)
     }
 
+    private var currentPlayingMusic: Music? = null
+//    fun setCurrentPlayingMusic(music: Music?) {
+//        currentPlayingMusic = music
+//        notifyItemChanged(0)
+//    }
+
+
     override fun onBindViewHolder(holder: MusicViewHolder, position: Int) {
         val music = items[position]
         holder.title.text = music.title
@@ -34,6 +43,12 @@ class MusicAdapter(private val items: MutableList<Music>) :
             val intent = Intent(Intent.ACTION_VIEW, "https://youtu.be/${music.link}".toUri())
             it.context.startActivity(intent)
         }
+
+        val isPlaying = music.id == currentPlayingMusic?.id
+        holder.itemView.setBackgroundColor(
+            if (isPlaying) ContextCompat.getColor(holder.itemView.context, R.color.playingHighlight)
+            else Color.TRANSPARENT
+        )
     }
 
     override fun getItemCount(): Int = items.size
@@ -57,4 +72,37 @@ class MusicAdapter(private val items: MutableList<Music>) :
         items.clear()
         notifyItemRangeChanged(0,items.size)
     }
+//
+//    fun mooveToFirst(music: Music) {
+//        val index = items.indexOf(music)
+//        if (index != -1) {
+//            items.removeAt(index)
+//            items.add(0, music)
+//            notifyItemMoved(index, 0)
+//        }
+//    }
+//
+//    fun mooveToLast(music: Music) {
+//        val index = items.indexOf(music)
+//        if (index != -1) {
+//            items.removeAt(index)
+//            items.add(items.size, music)
+//            notifyItemMoved(index, items.size)
+//        }
+//    }
+//
+//    fun getIndexOf(music: Music) : Int {
+//        return items.indexOf(music)
+//    }
+//
+//    fun getPlaylistSize() : Int {
+//        return items.size
+//    }
+//
+//    fun updateList(newList: List<Music>) {
+//        items.clear()
+//        items.addAll(newList)
+//        notifyItemRangeInserted(0, newList.size)
+//    }
+
 }

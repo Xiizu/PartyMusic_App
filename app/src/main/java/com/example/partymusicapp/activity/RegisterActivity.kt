@@ -1,6 +1,5 @@
 package com.example.partymusicapp.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -18,8 +17,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.partymusicapp.MainActivity
 import com.example.partymusicapp.R
-import com.example.partymusicapp.activity.LoginActivity
 import com.example.partymusicapp.interfaces.ApiService
+import com.example.partymusicapp.support.ActivityTracker
 import com.example.partymusicapp.support.Database.RetrofitClient
 import com.example.partymusicapp.support.UserDAO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -72,7 +71,7 @@ class RegisterActivity: AppCompatActivity() {
         if (type == "password" && !value.matches(".*[a-z].*".toRegex())) {
             errors.add(getString(R.string.info_password_need_lower))
         }
-        if (type == "password" && !value.matches(".*[!@#\$%^&*()_+=\\[\\]{}|;:'\",.<>?/`~\\\\-].*".toRegex())) {
+        if (type == "password" && !value.matches(".*[!@#$%^&*()_+=\\[\\]{}|;:'\",.<>?/`~\\\\-].*".toRegex())) {
             errors.add(getString(R.string.info_password_need_special))
         }
         if (type == "password" && !value.matches(".*[0-9].*".toRegex())) {
@@ -96,7 +95,7 @@ class RegisterActivity: AppCompatActivity() {
         progressBars = findViewById(R.id.progress_spinner)
         redirectLogin = findViewById(R.id.clickable_text_login)
         progressBars.visibility = ProgressBar.INVISIBLE
-        redirectLogin.setPaintFlags(redirectLogin.getPaintFlags() or android.graphics.Paint.UNDERLINE_TEXT_FLAG)
+        redirectLogin.paintFlags = redirectLogin.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
 
         name = findViewById(R.id.input_name)
         email = findViewById(R.id.input_email)
@@ -200,7 +199,7 @@ class RegisterActivity: AppCompatActivity() {
                             putExtra("token", tokenUser)
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         }
-                        setResult(Activity.RESULT_OK, intent)
+                        setResult(RESULT_OK, intent)
                         startActivity(intent)
                         finish()
 
@@ -209,18 +208,18 @@ class RegisterActivity: AppCompatActivity() {
                             getString(R.string.info_register_success),
                             Toast.LENGTH_SHORT
                         ).show()
-                        Log.i("MainActivity", "Register Request Success - " + newUser.toString())
+                        Log.i("MainActivity", "Register Request Success - $newUser")
                     } else if (response.code() == 409) {
                         Toast.makeText(this@RegisterActivity,getString(R.string.info_email_used),Toast.LENGTH_SHORT).show()
                         Log.e("MainActivity", "Register Request Error - " + body?.message)
                     } else {
                         Toast.makeText(this@RegisterActivity,getString(R.string.info_register_failed),Toast.LENGTH_SHORT).show()
                         Log.e("MainActivity", "Register Request Error - " + body?.message)
-                        Log.e("MainActivity", "Register Request Error - " + response.toString())
+                        Log.e("MainActivity", "Register Request Error - $response")
                     }
                 } catch (e: Exception) {
                     Toast.makeText(this@RegisterActivity,getString(R.string.error_retry),Toast.LENGTH_SHORT).show()
-                    Log.e("MainActivity", "Register Request Error - " + e.toString())
+                    Log.e("MainActivity", "Register Request Error - $e")
                 } finally {
                     button.isEnabled = true
                     progressBars.visibility = ProgressBar.INVISIBLE
@@ -229,15 +228,16 @@ class RegisterActivity: AppCompatActivity() {
         }
     }
 
-    @Suppress("MissingSuperCall")
     override fun onBackPressed() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.title_exit))
-            .setMessage(getString(R.string.confirm_exit))
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                finishAffinity()
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .show()
+        if (ActivityTracker.isLastActivity()) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.title_exit))
+                .setMessage(getString(R.string.confirm_exit))
+                .setPositiveButton(getString(R.string.yes)) { _, _ -> finishAffinity() }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
+        } else {
+            super.onBackPressed()
+        }
     }
 }

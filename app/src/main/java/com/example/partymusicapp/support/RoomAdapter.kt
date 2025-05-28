@@ -1,13 +1,10 @@
-package com.example.partymusicapp.adapter
+package com.example.partymusicapp.support
 
-import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.partymusicapp.MainActivity
 import com.example.partymusicapp.R
 import com.example.partymusicapp.activity.BaseActivity
 import com.example.partymusicapp.model.Room
@@ -41,6 +38,6 @@ class RoomAdapter(
 
     fun updateRooms(newRooms: List<Room>) {
         this.rooms = newRooms
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, newRooms.size)
     }
 }

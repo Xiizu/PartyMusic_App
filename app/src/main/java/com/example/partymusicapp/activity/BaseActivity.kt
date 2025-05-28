@@ -1,12 +1,11 @@
 package com.example.partymusicapp.activity
 
-import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
-import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -19,7 +18,6 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -27,7 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.partymusicapp.MainActivity
 import com.example.partymusicapp.R
-import com.example.partymusicapp.adapter.RoomAdapter
+import com.example.partymusicapp.support.RoomAdapter
 import com.example.partymusicapp.interfaces.ApiService
 import com.example.partymusicapp.model.Room
 import com.example.partymusicapp.model.User
@@ -37,10 +35,10 @@ import com.example.partymusicapp.support.MusicDAO
 import com.example.partymusicapp.support.RoomDAO
 import com.example.partymusicapp.support.UserDAO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.util.Locale
+import androidx.core.content.res.ResourcesCompat
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -48,7 +46,7 @@ open class BaseActivity : AppCompatActivity() {
     lateinit var user: User
     val roomDAO = RoomDAO()
     lateinit var rooms: ArrayList<Room>
-    var currentRoom: Room? = null
+   // var currentRoom: Room? = null
     val musicDAO = MusicDAO()
 
     lateinit var drawerLayout: DrawerLayout
@@ -67,7 +65,7 @@ open class BaseActivity : AppCompatActivity() {
         val container = drawer.findViewById<FrameLayout>(R.id.base_content)
         layoutInflater.inflate(layoutResID, container, true)
         super.setContentView(drawer)
-        window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
+        //window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
         rooms = ArrayList()
 
@@ -209,6 +207,10 @@ open class BaseActivity : AppCompatActivity() {
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+        val isDarkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        val iconColor = if (isDarkTheme) R.color.white else R.color.black
+        toggle.drawerArrowDrawable.color = ResourcesCompat.getColor(resources, iconColor, null)
+
 
         titleText = findViewById(R.id.header_title)
         searchBar = findViewById(R.id.search_bar)
@@ -320,7 +322,7 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (currentFocus != null) {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
             currentFocus!!.clearFocus()
         }

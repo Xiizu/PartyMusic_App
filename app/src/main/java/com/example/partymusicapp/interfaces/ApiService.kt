@@ -10,7 +10,6 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
-import kotlin.coroutines.Continuation
 
 
 interface ApiService {
@@ -69,12 +68,12 @@ interface ApiService {
     @POST("music/get")
     suspend fun getMusic(@Body request: GetMusicRequest) : Response<API_Response<ArrayList<Music>>>
 
-    data class AllMusicRequest(
-        val user_id : Int
-    )
-    @Headers("Authorization: Bearer $TOKEN")
-    @POST("music/get")
-    suspend fun allMusic(@Body request: AllMusicRequest) : Response<API_Response<ArrayList<Music>>>
+//    data class AllMusicRequest(
+//        val user_id : Int
+//    )
+//    @Headers("Authorization: Bearer $TOKEN")
+//    @POST("music/get")
+//    suspend fun allMusic(@Body request: AllMusicRequest) : Response<API_Response<ArrayList<Music>>>
 
     data class AddMusicRequest(
         val room_id : Int,
