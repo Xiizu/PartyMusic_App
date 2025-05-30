@@ -11,10 +11,10 @@ import com.example.partymusicapp.support.ActivityTracker
 
 class UserSettingsActivity : BaseActivity() {
 
+    // initialisation des elements de la vue
     lateinit var logoutButton : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         // Contenu settings
         super.onCreate(savedInstanceState)
         // suivre les activités ouvertes
@@ -27,9 +27,13 @@ class UserSettingsActivity : BaseActivity() {
             insets
         }
 
+        // Assignation des éléments de la vue
         logoutButton = findViewById<Button>(R.id.button_logout)
+
+        // Détecter le click sur le bouton de déconnexion
         logoutButton.setOnClickListener {
             Toast.makeText(this, getString(R.string.info_logout), Toast.LENGTH_SHORT).show()
+            // Supprimer toutes les données de l'utilisateur
             userDAO.init(this)
             userDAO.open()
             userDAO.empty()

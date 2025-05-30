@@ -6,4 +6,4 @@ const val BASE_URL = "https://partymusic.souakri.fr/api/" // O2Switch
 const val TOKEN = "dev"
 
 const val YT_API_URL = "https://www.googleapis.com/youtube/v3/"
-const val YT_API_KEY = "AIzaSyCZ96uSJCtv7eV6hUOK8_x6guwj1xKiGe8"
+const val YT_API_KEY = "AIzaSyAfYthcZ93cPGSOYOJLKPaBa7NnhTLRTiE"

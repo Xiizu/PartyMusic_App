@@ -42,4 +42,7 @@
     <string name="home">Accueil</string>
     <string name="error_no_music">Aucune musique trouvée pour cette Party</string>
     <string name="info_proposed">Musique ajoutée par</string>
+    <string name="hint_new_username">Changer le nom d\'utilisateur</string>
+    <string name="hint_new_password">Changer le mot de passe</string>
+    <string name="info_save">Sauvegarder</string>
 </resources>
