@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -39,17 +40,12 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.util.Locale
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.WindowCompat
 import com.example.partymusicapp.support.YouTubeAPI
 
 open class BaseActivity : AppCompatActivity() {
 
-    val userDAO = UserDAO()
-    lateinit var user: User
-    val roomDAO = RoomDAO()
-    lateinit var rooms: ArrayList<Room>
-   // var currentRoom: Room? = null
-    val musicDAO = MusicDAO()
-
+    // initialisation des elements de la vue
     lateinit var drawerLayout: DrawerLayout
     lateinit var toolbar: Toolbar
     lateinit var titleText: TextView
@@ -61,23 +57,47 @@ open class BaseActivity : AppCompatActivity() {
     lateinit var roomAdapter: RoomAdapter
     lateinit var progressBarDrawer : ProgressBar
 
+    // initialisation des variables globales pour l'activity
+    val userDAO = UserDAO()
+    lateinit var user: User
+    val roomDAO = RoomDAO()
+    lateinit var rooms: ArrayList<Room>
+    val musicDAO = MusicDAO()
+    // var currentRoom: Room? = null
+
+    // afficher la vue
     override fun setContentView(layoutResID: Int) {
+        // Définition de la barre d'état
         val drawer = layoutInflater.inflate(R.layout.activity_base, null)
         val container = drawer.findViewById<FrameLayout>(R.id.base_content)
+        // Ajout du menu latéral
         layoutInflater.inflate(layoutResID, container, true)
         super.setContentView(drawer)
-        //window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
+        // Modifier la couleur de la barre d'état
+        window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
+
+        // Assignation de la variable contenant la liste des salles
         rooms = ArrayList()
 
-        if (setupDrawer()) {
-            var isEditing = false
+        // Assignation des éléments de la vue
+        toolbar = findViewById(R.id.toolbar)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        titleText = findViewById(R.id.header_title)
+        searchBar = findViewById(R.id.search_bar)
+        settingButton = findViewById(R.id.button_setting)
+        roomRecycler = findViewById(R.id.room_holder)
+        refreshButton = findViewById(R.id.refresh_button)
+        footerView = findViewById(R.id.footer)
+        progressBarDrawer = findViewById(R.id.progress_spinner_drawer)
 
+        // Initialisation du menu latéral
+        if (setupDrawer()) {
+            // Gestion de la barre de recherche
+            var isEditing = false
             searchBar.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
                 override fun afterTextChanged(s: Editable?) {
                     if (!isEditing) {
                         isEditing = true
@@ -88,6 +108,7 @@ open class BaseActivity : AppCompatActivity() {
                     }
                 }
             })
+            // Lancement de l'action de recherche
             searchBar.setOnKeyListener { _, keyCode, event ->
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
                     val query = searchBar.text.toString()
@@ -100,23 +121,33 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    // Redirection vers la salle
     fun goToRoom(room: Room) {
+        // Afficher la barre de progression
         progressBarDrawer.visibility = View.VISIBLE
+        // Envoi vers la salle
         lifecycleScope.launch {
+            // Récupération des musiques de la salle
             fetchMusics(room.id)
+            // Envoi vers l'activity de la salle et passage des données de la salle
             startActivity(Intent(this@BaseActivity, MainActivity::class.java).apply {
                 putExtra("ROOM_ID", room.id)
                 addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             })
+            // Masquage de la barre de progression
             progressBarDrawer.visibility = View.GONE
         }
     }
 
+    // Récupération des musiques de la salle
     private suspend fun fetchMusics(roomId: Int) {
         try {
+            // Appel à l'API pour récupérer les musiques de la salle
             val response = RetrofitClient.instance.getMusic(ApiService.GetMusicRequest(roomId))
             val body = response.body()
+            // Traitement des données
             if (body != null && body.statut == "success" && body.data != null) {
+                // Génération de la salle mise à jour dans la base de données
                 musicDAO.init(this@BaseActivity)
                 musicDAO.open()
                 musicDAO.emptyRoom(roomId)
@@ -130,6 +161,7 @@ open class BaseActivity : AppCompatActivity() {
                 )
             } else if (response.code() == 404 || response.message() == "No musics found for this room") {
                 Log.e("MainActivity", "GetMusics Request Error - ${response.body()?.message}")
+                // Vide la salle si elle est vide
                 musicDAO.init(this@BaseActivity)
                 musicDAO.open()
                 musicDAO.emptyRoom(roomId)
@@ -142,24 +174,19 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    private fun putAllRooms() {
-        roomDAO.open()
-        val roomsToAdd = roomDAO.index()
-        roomDAO.close()
-        rooms.clear()
-        rooms.addAll(roomsToAdd)
-        roomAdapter.updateRooms(rooms)
-    }
-
+    // Récupération des salles de l'utilisateur
     private fun fetchRooms() {
+        // Afficher la barre de progression
         progressBarDrawer.visibility = View.VISIBLE
-        roomDAO.init(this)
-        putAllRooms()
+        // Appel à l'API pour récupérer les salles de l'utilisateur
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.instance.getUserRoom(ApiService.GetUserRoomRequest(user.id))
                 val body = response.body()
+                // Traitement des données
                 if (body != null && body.statut == "success" && body.data != null) {
+                    // Génération des salles de l'utilisateur dans la base de données
+                    roomDAO.init(this@BaseActivity)
                     roomDAO.open()
                     roomDAO.empty()
                     for (room in body.data) {
@@ -175,16 +202,23 @@ open class BaseActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("MainActivity", "GetUserRoom Request Error - $e")
             } finally {
-                putAllRooms()
+                // Récupération des salles de l'utilisateur dans la base de données
+                roomDAO.open()
+                val roomsToAdd = roomDAO.index()
+                roomDAO.close()
+                // Mise à jour de la liste des salles
+                rooms.clear()
+                rooms.addAll(roomsToAdd)
+                roomAdapter.updateRooms(rooms)
+                // Masquage de la barre de progression
                 progressBarDrawer.visibility = View.GONE
             }
         }
     }
 
-    private fun initoutubeApi() {
-        progressBarDrawer.visibility = View.VISIBLE
-        roomDAO.init(this)
-        putAllRooms()
+    // Initialisation de l'API Youtube pour générer une session
+    private fun initYoutubeApi() {
+        // Appel à l'API pour initialiser la session
         lifecycleScope.launch {
             try {
                 val response = YouTubeAPI.RetrofitClientYT.instanceYT.initApiRequest()
@@ -196,120 +230,144 @@ open class BaseActivity : AppCompatActivity() {
             }
         }
     }
-    
-    private fun setupDrawer(): Boolean {
+
+    // Vérification de l'existence de l'utilisateur
+    private fun checkUser(): Boolean {
+        // Récupération de l'utilisateur connecté
         userDAO.init(this)
         val connectedUser = userDAO.get()
+        // Vérification de l'existence de l'utilisateur
         if (connectedUser == null) {
-            val intent = Intent(this, LoginActivity::class.java)
+            // Redirection vers la page d'inscription si aucun utilisateur n'est trouvé
+            val intent = Intent(this, RegisterActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
+            return false
         } else {
             user = connectedUser
+            return true
         }
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
+    }
 
-        toolbar.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(intent)
+    // Initialisation du menu latéral
+    private fun setupDrawer(): Boolean {
+        // Vérification de la connexion de l'utilisateur
+        if (!checkUser()) {
+            return false
         }
 
-        drawerLayout = findViewById(R.id.drawer_layout)
+        // Génération du menu latéral
         val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar,
+            this,
+            drawerLayout,
+            toolbar,
             R.string.info_drawer_oppened,
             R.string.info_drawer_closed
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-        val isDarkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-        val iconColor = if (isDarkTheme) R.color.white else R.color.black
-        toggle.drawerArrowDrawable.color = ResourcesCompat.getColor(resources, iconColor, null)
-
-
-        titleText = findViewById(R.id.header_title)
-        searchBar = findViewById(R.id.search_bar)
-
-        titleText.text = user.name
-        settingButton = findViewById(R.id.button_setting)
-        settingButton.setOnClickListener {
-            val intent = Intent(this, UserSettingsActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(intent)
-        }
-
-        roomRecycler = findViewById(R.id.room_holder)
+        // Génération de la liste des salles
         roomRecycler.layoutManager = LinearLayoutManager(this)
         roomAdapter = RoomAdapter(this@BaseActivity, rooms)
         roomRecycler.adapter = roomAdapter
 
-        progressBarDrawer = findViewById(R.id.progress_spinner_drawer)
+        // Modification de styles
+        setSupportActionBar(toolbar)
+        titleText.text = user.name
+        val isDarkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        val iconColor = if (isDarkTheme) R.color.white else R.color.black
+        toggle.drawerArrowDrawable.color = ResourcesCompat.getColor(resources, iconColor, null)
 
-        fetchRooms()
-        footerView = findViewById(R.id.footer)
+        // Détection du click sur la toolbar
+        toolbar.setOnClickListener {
+            // Redirection vers la page d'accueil
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            startActivity(intent)
+        }
+        // Détection du click sur le bouton de réglages
+        settingButton.setOnClickListener {
+            // Redirection vers la page de réglages
+            val intent = Intent(this, UserSettingsActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+        }
+        // Détection du click sur le bouton de création de salle
         footerView.setOnClickListener {
+            // Redirection vers la page de création de salle
             if (this::class != CreateRoomActivity::class) {
                 val intent = Intent(this, CreateRoomActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
                 startActivity(intent)
             }
         }
-
-        refreshButton = findViewById(R.id.refresh_button)
+        // Détection du click sur le bouton de rafraichissement de la liste des salles
         refreshButton.setOnClickListener {
+            // Rafraîchissement de la liste des salles
             fetchRooms()
         }
-        
-        initoutubeApi()
+
+        // Récupération des salles de l'utilisateur
+        fetchRooms()
+        // Initialisation de l'API Youtube
+        initYoutubeApi()
 
         return true
     }
 
+    // Rejoindre une nouvelle salle
     private fun joinRoom(code: String) {
+        // Désactiver la barre de recherche
         searchBar.clearFocus()
         searchBar.isEnabled = false
 
+        // Appel à l'API pour rejoindre la salle
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.instance.joinRoom(ApiService.JoinRoomRequest(user.id, code))
                 val body = response.body()
-
+                // Traitement des données
                 if (body != null && body.statut == "success" && body.data != null) {
-                    val joinedRoom = body.data
+                    // Réinitialisation de la barre de recherche
                     searchBar.text = null
-                    // database
+                    // Génération de la salle dans la base de données
+                    val joinedRoom = body.data
                     roomDAO.open()
                     roomDAO.insert(joinedRoom)
                     roomDAO.close()
-                    // drawer
+                    // Mise à jour de la liste des salles
                     rooms.add(joinedRoom)
                     roomAdapter.updateRooms(rooms)
-                    // vue
+                    roomAdapter.notifyDataSetChanged()
+                    // Récupération des musiques de la salle et redirection vers la salle
                     lifecycleScope.launch {
                         fetchMusics(joinedRoom.id)
                         goToRoom(joinedRoom)
                     }
                     Log.i("MainActivity", "JoinRoom Request Success - $response")
                 } else if (response.code() == 400 || response.code() == 404) {
+                    // Afficher un message d'erreur si la salle n'existe pas ou si l'utilisateur est déjà dans la salle
                     Toast.makeText(this@BaseActivity, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show()
                     Log.e("MainActivity", "JoinRoom Request Error - ${body?.message}")
                 } else {
+                    // Afficher un message d'erreur
                     Toast.makeText(this@BaseActivity, getString(R.string.error_retry), Toast.LENGTH_SHORT).show()
                     Log.e("MainActivity", "JoinRoom Request Unknown Error - $response")
                 }
             } catch (e: Exception) {
+                // Afficher un message d'erreur
                 Toast.makeText(this@BaseActivity, getString(R.string.error_retry), Toast.LENGTH_SHORT).show()
                 Log.e("MainActivity", "JoinRoom Request Exception - $e")
             } finally {
+                // Réactiver la barre de recherche
                 searchBar.isEnabled = true
-                fetchRooms()
             }
         }
     }
 
+    // Gérer le retour en arrière
     override fun onBackPressed() {
+        // Si c'est la dernière activité, afficher une boite de dialogue de confirmation
         if (ActivityTracker.isLastActivity()) {
             MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.title_exit))
@@ -318,16 +376,17 @@ open class BaseActivity : AppCompatActivity() {
                 .setNegativeButton(getString(R.string.cancel), null)
                 .show()
         } else {
+            // Sinon, revenir à l'activité précédente
             super.onBackPressed()
         }
     }
 
+    // Redéfinition de la méthode onResume pour fermer le menu
     override fun onResume() {
         super.onResume()
-        drawerLayout = findViewById(R.id.drawer_layout)
+        // Rafraîchir la liste des salles
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
-            fetchRooms()
         }
         if (shouldRecreate) {
             shouldRecreate = false
@@ -335,10 +394,12 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    // Objet de gestion des activités ouvertes
     companion object {
         var shouldRecreate = false
     }
 
+    // Cacher le clavier lorsque l'utilisateur clique en dehors de celui ci
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (currentFocus != null) {
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager

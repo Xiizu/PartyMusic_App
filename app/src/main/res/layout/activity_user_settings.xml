@@ -22,6 +22,26 @@
             android:layout_height="wrap_content"
             android:padding="32dp">
 
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_new_username"
+                android:hint="@string/hint_new_username"
+                android:inputType="textPersonName"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text_new_password"
+                android:hint="@string/hint_new_password"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_change_username"
+                android:text="@string/info_save"/>
+
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

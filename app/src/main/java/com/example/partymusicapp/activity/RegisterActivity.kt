@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 
 class RegisterActivity: AppCompatActivity() {
 
+    // initialisation des elements de la vue
     private lateinit var name: EditText
     private lateinit var email: EditText
     private lateinit var password: EditText
@@ -34,11 +35,13 @@ class RegisterActivity: AppCompatActivity() {
     private lateinit var progressBars: ProgressBar
     private lateinit var redirectLogin : TextView
 
+    // initialisation des variables globales pour l'activity
     private var idUser : Int = 0
     private lateinit var nameUser: String
     private lateinit var emailUser: String
     private lateinit var tokenUser: String
 
+    // Activation du bouton si les champs de texte sont valides
     fun checkInputs(){
         val nameText = name.text.toString()
         val emailText = email.text.toString()
@@ -54,6 +57,7 @@ class RegisterActivity: AppCompatActivity() {
                 && validateInputs("name",nameText).isEmpty()
     }
 
+    // Vérification des champs saisis par l'utilisateur
     fun validateInputs(type: String, value: String): List<String> {
         val errors = mutableListOf<String>()
         if (type == "name" && value.length < 3) {
@@ -83,8 +87,13 @@ class RegisterActivity: AppCompatActivity() {
         return errors
     }
 
+    // Fonction de création de l'activity
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Contenu register
         super.onCreate(savedInstanceState)
+        // suivre les activités ouvertes
+        ActivityTracker.register(this)
+        // afficher la vue
         enableEdgeToEdge()
         setContentView(R.layout.activity_register)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -92,11 +101,9 @@ class RegisterActivity: AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        // Assignation des éléments de la vue
         progressBars = findViewById(R.id.progress_spinner)
         redirectLogin = findViewById(R.id.clickable_text_login)
-        progressBars.visibility = ProgressBar.INVISIBLE
-        redirectLogin.paintFlags = redirectLogin.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
-
         name = findViewById(R.id.input_name)
         email = findViewById(R.id.input_email)
         password = findViewById(R.id.input_password)
@@ -105,8 +112,11 @@ class RegisterActivity: AppCompatActivity() {
         progressBars = findViewById(R.id.progress_spinner)
         redirectLogin = findViewById(R.id.clickable_text_login)
 
+        // Modification de styles
+        progressBars.visibility = ProgressBar.INVISIBLE
+        redirectLogin.paintFlags = redirectLogin.paintFlags or android.graphics.Paint.UNDERLINE_TEXT_FLAG
 
-
+        // lancer une vérification à chaque lettre tapée
         val inputWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 checkInputs()
@@ -119,6 +129,7 @@ class RegisterActivity: AppCompatActivity() {
         password.addTextChangedListener(inputWatcher)
         passwordVerify.addTextChangedListener(inputWatcher)
 
+        // Vérification des champs saisis par l'utilisateur
         name.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 val nameValue = name.text.toString()
@@ -156,42 +167,42 @@ class RegisterActivity: AppCompatActivity() {
             }
         }
 
+        // Aller à l'activity de connexion
         redirectLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
 
+        // Détecter le click sur le bouton de création de compte
         button.setOnClickListener {
+            // Récupération des informations saisies
             val givenEmail = email.text.toString()
             val givenPassword = password.text.toString()
             val givenName = name.text.toString()
 
+            // Désactiver le bouton et afficher la barre de progression
             button.isEnabled = false
             progressBars.visibility = ProgressBar.VISIBLE
 
+            // Appel à l'API pour la création de compte
             lifecycleScope.launch {
                 try {
-                    val response = RetrofitClient.instance.registerUser(
-                        ApiService.RegisterRequest(
-                            name = givenName,
-                            email = givenEmail,
-                            password = givenPassword
-                        )
-                    )
+                    val response = RetrofitClient.instance.registerUser(ApiService.RegisterRequest(name = givenName, email = givenEmail, password = givenPassword))
                     val body = response.body()
 
+                    // Réponse de l'API et traitement des données
                     if (body != null && body.statut == "success" && body.data != null) {
+                        // Créer un nouvel utilisateur et l'ajouter à la base de données
                         val newUser = body.data
                         val userDAO = UserDAO()
                         userDAO.init(this@RegisterActivity)
                         userDAO.insert(newUser)
-
                         idUser = newUser.id
                         nameUser = newUser.name
                         emailUser = newUser.email
                         tokenUser = newUser.token
-
+                        // Démarrer l'activity principale et passer les données de l'utilisateur
                         val intent = Intent(this@RegisterActivity, MainActivity::class.java).apply {
                             putExtra("id", idUser)
                             putExtra("email", emailUser)
@@ -202,25 +213,25 @@ class RegisterActivity: AppCompatActivity() {
                         setResult(RESULT_OK, intent)
                         startActivity(intent)
                         finish()
-
-                        Toast.makeText(
-                            this@RegisterActivity,
-                            getString(R.string.info_register_success),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        // Afficher un message de succès
+                        Toast.makeText(this@RegisterActivity, getString(R.string.info_register_success), Toast.LENGTH_SHORT).show()
                         Log.i("MainActivity", "Register Request Success - $newUser")
                     } else if (response.code() == 409) {
+                        // Afficher un message d'erreur si l'email est déjà utilisé
                         Toast.makeText(this@RegisterActivity,getString(R.string.info_email_used),Toast.LENGTH_SHORT).show()
                         Log.e("MainActivity", "Register Request Error - " + body?.message)
                     } else {
+                        // Afficher un message d'erreur
                         Toast.makeText(this@RegisterActivity,getString(R.string.info_register_failed),Toast.LENGTH_SHORT).show()
                         Log.e("MainActivity", "Register Request Error - " + body?.message)
                         Log.e("MainActivity", "Register Request Error - $response")
                     }
                 } catch (e: Exception) {
+                    // Afficher un message d'erreur
                     Toast.makeText(this@RegisterActivity,getString(R.string.error_retry),Toast.LENGTH_SHORT).show()
                     Log.e("MainActivity", "Register Request Error - $e")
                 } finally {
+                    // Réactiver le bouton et masquer la barre de progression
                     button.isEnabled = true
                     progressBars.visibility = ProgressBar.INVISIBLE
                 }
@@ -228,7 +239,9 @@ class RegisterActivity: AppCompatActivity() {
         }
     }
 
+    // Gérer le retour en arrière
     override fun onBackPressed() {
+        // Si c'est la dernière activité, afficher une boite de dialogue de confirmation avant de quitter
         if (ActivityTracker.isLastActivity()) {
             MaterialAlertDialogBuilder(this)
                 .setTitle(getString(R.string.title_exit))
@@ -237,6 +250,7 @@ class RegisterActivity: AppCompatActivity() {
                 .setNegativeButton(getString(R.string.cancel), null)
                 .show()
         } else {
+            // Sinon, revenir à l'activité précédente
             super.onBackPressed()
         }
     }
