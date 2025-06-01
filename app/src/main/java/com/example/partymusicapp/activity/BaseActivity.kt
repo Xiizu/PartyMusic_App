@@ -255,8 +255,8 @@ open class BaseActivity : AppCompatActivity() {
         if (!checkUser()) {
             return false
         }
-
         // Génération du menu latéral
+        setSupportActionBar(toolbar)
         val toggle = ActionBarDrawerToggle(
             this,
             drawerLayout,
@@ -270,14 +270,11 @@ open class BaseActivity : AppCompatActivity() {
         roomRecycler.layoutManager = LinearLayoutManager(this)
         roomAdapter = RoomAdapter(this@BaseActivity, rooms)
         roomRecycler.adapter = roomAdapter
-
         // Modification de styles
-        setSupportActionBar(toolbar)
         titleText.text = user.name
         val isDarkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
         val iconColor = if (isDarkTheme) R.color.white else R.color.black
         toggle.drawerArrowDrawable.color = ResourcesCompat.getColor(resources, iconColor, null)
-
         // Détection du click sur la toolbar
         toolbar.setOnClickListener {
             // Redirection vers la page d'accueil
@@ -305,13 +302,12 @@ open class BaseActivity : AppCompatActivity() {
         refreshButton.setOnClickListener {
             // Rafraîchissement de la liste des salles
             fetchRooms()
+            titleText.text = user.name
         }
-
         // Récupération des salles de l'utilisateur
         fetchRooms()
         // Initialisation de l'API Youtube
         initYoutubeApi()
-
         return true
     }
 

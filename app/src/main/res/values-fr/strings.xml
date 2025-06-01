@@ -42,7 +42,14 @@
     <string name="home">Accueil</string>
     <string name="error_no_music">Aucune musique trouvée pour cette Party</string>
     <string name="info_proposed">Musique ajoutée par</string>
-    <string name="hint_new_username">Changer le nom d\'utilisateur</string>
-    <string name="hint_new_password">Changer le mot de passe</string>
-    <string name="info_save">Sauvegarder</string>
+    <string name="hint_new_username">Nouveau nom d\'utilisateur</string>
+    <string name="hint_new_password">Nouveau mot de passe</string>
+    <string name="info_save">Enregistrer</string>
+    <string name="hint_old_password">Ancien mot de passe</string>
+    <string name="edit_username">Modifier le nom d\'utilisateur</string>
+    <string name="edit_password">Modifier le mot de passe</string>
+    <string name="info_password_changed">"Mot de passe modifié avec succès "</string>
+    <string name="info_username_changed">Nom d\'utilisateur modifié avec succès</string>
+    <string name="error_old_password_not_matching">L\'ancien mot de passe ne correspond pas</string>
+    <string name="error_old_same_new_password">Le nouveau mot de passe ne peut pas être le même qu\'un ancien</string>
 </resources>

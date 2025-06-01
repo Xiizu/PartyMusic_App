@@ -43,7 +43,14 @@
     <string name="home">Home</string>
     <string name="error_no_music">No music found for this Party</string>
     <string name="info_proposed">Music added by</string>
-    <string name="hint_new_username">Edit username</string>
-    <string name="hint_new_password">Edit password</string>
+    <string name="hint_new_username">New username</string>
+    <string name="hint_new_password">New password</string>
     <string name="info_save">Save</string>
+    <string name="hint_old_password">Old password</string>
+    <string name="edit_username">Edit username</string>
+    <string name="edit_password">Edit password</string>
+    <string name="info_password_changed">Password successfuly changed</string>
+    <string name="info_username_changed">Username successfuly changed</string>
+    <string name="error_old_password_not_matching">The old password does not correspond</string>
+    <string name="error_old_same_new_password">The new password cannot be the same as a previous one</string>
 </resources>
