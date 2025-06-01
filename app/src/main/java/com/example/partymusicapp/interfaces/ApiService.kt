@@ -35,6 +35,23 @@ interface ApiService {
     @POST("user/create")
     suspend fun registerUser(@Body request: RegisterRequest): Response<API_Response<User>>
 
+    data class EditUsernameRequest(
+        val id : Int,
+        val name : String
+    )
+    @Headers("Authorization: Bearer $TOKEN")
+    @POST("user/changeUsername")
+    suspend fun editUsername(@Body request: EditUsernameRequest): Response<API_Response<User>>
+
+    data class EditPasswordRequest(
+        val id : Int,
+        val oldPassword : String,
+        val password : String
+    )
+    @Headers("Authorization: Bearer $TOKEN")
+    @POST("user/changePassword")
+    suspend fun editPassword(@Body request: EditPasswordRequest): Response<API_Response<User>>
+
     // ROOM
     data class CreateRoomRequest(
         val id : Int,

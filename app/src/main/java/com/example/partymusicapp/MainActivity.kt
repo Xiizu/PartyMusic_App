@@ -528,6 +528,8 @@ class MainActivity : BaseActivity() {
         currentRoomId = roomId
         val fetchedRoom = if (roomId != -1) roomDAO.get(roomId) else null
         if (fetchedRoom == null) {
+            // Arrêter la mise à jour de la salle
+            stopPolling()
             // Afficher l'affichage d'accueil si aucune salle n'est fournie ou trouvée
             roomLayout.visibility = View.GONE
             noRoomLayout.visibility = View.VISIBLE
@@ -696,7 +698,7 @@ class MainActivity : BaseActivity() {
             )
         ) {
             hidePlayer()
-            return true
+            return super.dispatchTouchEvent(ev)
         }
         return super.dispatchTouchEvent(ev)
     }

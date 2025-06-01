@@ -65,4 +65,16 @@ class UserDAO {
 
         return User(id, name, email, password, token)
     }
+
+    fun update(user: User) {
+        open()
+        val values = ContentValues()
+        values.put("id", user.id)
+        values.put("name", user.name)
+        values.put("email", user.email)
+        values.put("password", user.password)
+        values.put("token", user.token)
+        base.update("user", values, "id = ?", arrayOf(user.id.toString()))
+        close()
+    }
 }
