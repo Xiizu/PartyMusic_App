@@ -210,6 +210,7 @@ open class BaseActivity : AppCompatActivity() {
                 rooms.clear()
                 rooms.addAll(roomsToAdd)
                 roomAdapter.updateRooms(rooms)
+                roomAdapter.notifyDataSetChanged()
                 // Masquage de la barre de progression
                 progressBarDrawer.visibility = View.GONE
             }
