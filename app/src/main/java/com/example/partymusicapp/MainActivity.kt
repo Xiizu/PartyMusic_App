@@ -128,6 +128,7 @@ class MainActivity : BaseActivity() {
 
         // Assignation des variables globales
         musicDAO.init(this)
+        roomDAO.init(this)
         adapter = MusicAdapter(mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
