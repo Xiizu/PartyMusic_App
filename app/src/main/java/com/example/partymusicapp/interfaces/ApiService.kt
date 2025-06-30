@@ -102,4 +102,11 @@ interface ApiService {
     @Headers("Authorization: Bearer $TOKEN")
     @POST("music/create")
     suspend fun addMusic(@Body request: AddMusicRequest) : Response<API_Response<Music>>
+
+    data class DeleteMusicRequest(
+        val id : Int
+    )
+    @Headers("Authorization: Bearer $TOKEN")
+    @POST("music/delete")
+    suspend fun deleteMusic(@Body request: DeleteMusicRequest) : Response<API_Response<Music>>
 }

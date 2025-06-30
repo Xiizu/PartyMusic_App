@@ -6,6 +6,17 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
     <ImageButton
+        android:id="@+id/remove_button"
+        android:background="@android:color/transparent"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="@string/info_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/link_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_trash"/>
+    <ImageButton
         android:id="@+id/link_button"
         android:background="@android:color/transparent"
         android:layout_width="50dp"

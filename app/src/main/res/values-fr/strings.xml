@@ -52,4 +52,8 @@
     <string name="info_username_changed">Nom d\'utilisateur modifié avec succès</string>
     <string name="error_old_password_not_matching">L\'ancien mot de passe ne correspond pas</string>
     <string name="error_old_same_new_password">Le nouveau mot de passe ne peut pas être le même qu\'un ancien</string>
+    <string name="info_delete">Supprimer</string>
+    <string name="info_delete_music">Supprimer la musique</string>
+    <string name="info_confirm_delete_music">Êtes-vous sûr de vouloir supprimer cette musique :</string>
+    <string name="info_error_deleting">Une erreur s\'est produite en essayant de supprimer cette musique</string>
 </resources>
