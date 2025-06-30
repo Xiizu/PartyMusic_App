@@ -47,6 +47,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.partymusicapp.support.OnYouTubeVideoClickListener
+import com.example.partymusicapp.support.RoomDAO
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
@@ -91,6 +92,7 @@ class MainActivity : BaseActivity() {
 
     // Création de la vue
     override fun onCreate(savedInstanceState: Bundle?) {
+        // init la database
         // Contenu main
         super.onCreate(savedInstanceState)
         // suivre les activités ouvertes

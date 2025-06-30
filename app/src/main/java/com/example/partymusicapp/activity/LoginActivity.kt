@@ -20,6 +20,7 @@ import com.example.partymusicapp.MainActivity
 import com.example.partymusicapp.interfaces.ApiService
 import com.example.partymusicapp.support.ActivityTracker
 import com.example.partymusicapp.support.Database.RetrofitClient
+import com.example.partymusicapp.support.RoomDAO
 import com.example.partymusicapp.support.UserDAO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -106,6 +107,7 @@ class LoginActivity : AppCompatActivity(){
                         val userDAO = UserDAO()
                         userDAO.init(this@LoginActivity)
                         userDAO.insert(newUser)
+                        // Récupération des informations de l'utilisateur
                         idUser = newUser.id
                         nameUser = newUser.name
                         emailUser = newUser.email

@@ -17,9 +17,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.partymusicapp.MainActivity
 import com.example.partymusicapp.R
+import com.example.partymusicapp.activity.LoginActivity
 import com.example.partymusicapp.interfaces.ApiService
 import com.example.partymusicapp.support.ActivityTracker
 import com.example.partymusicapp.support.Database.RetrofitClient
+import com.example.partymusicapp.support.RoomDAO
 import com.example.partymusicapp.support.UserDAO
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -198,6 +200,7 @@ class RegisterActivity: AppCompatActivity() {
                         val userDAO = UserDAO()
                         userDAO.init(this@RegisterActivity)
                         userDAO.insert(newUser)
+                        // Récupération des informations de l'utilisateur
                         idUser = newUser.id
                         nameUser = newUser.name
                         emailUser = newUser.email

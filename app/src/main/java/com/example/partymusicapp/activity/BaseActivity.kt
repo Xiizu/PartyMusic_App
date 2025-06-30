@@ -74,6 +74,13 @@ open class BaseActivity : AppCompatActivity() {
         layoutInflater.inflate(layoutResID, container, true)
         super.setContentView(drawer)
 
+        // init du roomDao
+        roomDAO.init(this@BaseActivity)
+        // init du musicDao
+        musicDAO.init(this@BaseActivity)
+        // init du userDAO
+        userDAO.init(this@BaseActivity)
+
         // Modifier la couleur de la barre d'état
         window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
 
@@ -148,7 +155,7 @@ open class BaseActivity : AppCompatActivity() {
             // Traitement des données
             if (body != null && body.statut == "success" && body.data != null) {
                 // Génération de la salle mise à jour dans la base de données
-                musicDAO.init(this@BaseActivity)
+                //musicDAO.init(this@BaseActivity)
                 musicDAO.open()
                 musicDAO.emptyRoom(roomId)
                 for (music in body.data) {
@@ -162,7 +169,7 @@ open class BaseActivity : AppCompatActivity() {
             } else if (response.code() == 404 || response.message() == "No musics found for this room") {
                 Log.e("MainActivity", "GetMusics Request Error - ${response.body()?.message}")
                 // Vide la salle si elle est vide
-                musicDAO.init(this@BaseActivity)
+                //musicDAO.init(this@BaseActivity)
                 musicDAO.open()
                 musicDAO.emptyRoom(roomId)
                 musicDAO.close()
@@ -186,7 +193,7 @@ open class BaseActivity : AppCompatActivity() {
                 // Traitement des données
                 if (body != null && body.statut == "success" && body.data != null) {
                     // Génération des salles de l'utilisateur dans la base de données
-                    roomDAO.init(this@BaseActivity)
+                    //roomDAO.init(this@BaseActivity)
                     roomDAO.open()
                     roomDAO.empty()
                     for (room in body.data) {
@@ -235,7 +242,7 @@ open class BaseActivity : AppCompatActivity() {
     // Vérification de l'existence de l'utilisateur
     private fun checkUser(): Boolean {
         // Récupération de l'utilisateur connecté
-        userDAO.init(this)
+        //userDAO.init(this)
         val connectedUser = userDAO.get()
         // Vérification de l'existence de l'utilisateur
         if (connectedUser == null) {
