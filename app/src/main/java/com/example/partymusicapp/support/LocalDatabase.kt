@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class LocalDatabase (context: Context) : SQLiteOpenHelper(context, "user", null, 5){
+class LocalDatabase (context: Context) : SQLiteOpenHelper(context, "user", null, 6){
     override fun onCreate(db: SQLiteDatabase?) {
         val sql_user = """
               CREATE TABLE user (
@@ -36,6 +36,13 @@ class LocalDatabase (context: Context) : SQLiteOpenHelper(context, "user", null,
             `user_id` INTEGER NOT NULL, 
             `room_id` INTEGER NOT NULL)""".trimIndent()
         db?.execSQL(sql_music)
+
+        val sql_playlist = """
+            CREATE TABLE playlist (
+            `id` INTEGER PRIMARY KEY, 
+            `label` TEXT NOT NULL, 
+            `room_id` INTEGER NOT NULL)""".trimIndent()
+        db?.execSQL(sql_playlist)
     }
 
     override fun onUpgrade(
@@ -46,6 +53,7 @@ class LocalDatabase (context: Context) : SQLiteOpenHelper(context, "user", null,
         db?.execSQL("DROP TABLE IF EXISTS user")
         db?.execSQL("DROP TABLE IF EXISTS room")
         db?.execSQL("DROP TABLE IF EXISTS music")
+        db?.execSQL("DROP TABLE IF EXISTS playlist")
         onCreate(db)
     }
 

@@ -29,11 +29,8 @@ class MusicAdapter(private val items: MutableList<Music>) :
     }
 
     private var currentPlayingMusic: Music? = null
-//    fun setCurrentPlayingMusic(music: Music?) {
-//        currentPlayingMusic = music
-//        notifyItemChanged(0)
-//    }
 
+    private val grayPositions = mutableSetOf<Int>()
 
     override fun onBindViewHolder(holder: MusicViewHolder, position: Int) {
         val music = items[position]
@@ -49,13 +46,18 @@ class MusicAdapter(private val items: MutableList<Music>) :
             if (isPlaying) ContextCompat.getColor(holder.itemView.context, R.color.playingHighlight)
             else Color.TRANSPARENT
         )
+
+        holder.itemView.alpha = if (grayPositions.contains(position)) 0.5f else 1f
     }
 
     override fun getItemCount(): Int = items.size
 
-    fun addItem(music: Music) {
+    fun addItem(music: Music, grey: Boolean = false) {
         if (items.none { it.id == music.id }) {
             items.add(music)
+            if (grey) {
+                grayPositions.add(items.size - 1)
+            }
             notifyItemInserted(items.size - 1)
         }
     }
@@ -72,37 +74,5 @@ class MusicAdapter(private val items: MutableList<Music>) :
         items.clear()
         notifyItemRangeChanged(0,items.size)
     }
-//
-//    fun mooveToFirst(music: Music) {
-//        val index = items.indexOf(music)
-//        if (index != -1) {
-//            items.removeAt(index)
-//            items.add(0, music)
-//            notifyItemMoved(index, 0)
-//        }
-//    }
-//
-//    fun mooveToLast(music: Music) {
-//        val index = items.indexOf(music)
-//        if (index != -1) {
-//            items.removeAt(index)
-//            items.add(items.size, music)
-//            notifyItemMoved(index, items.size)
-//        }
-//    }
-//
-//    fun getIndexOf(music: Music) : Int {
-//        return items.indexOf(music)
-//    }
-//
-//    fun getPlaylistSize() : Int {
-//        return items.size
-//    }
-//
-//    fun updateList(newList: List<Music>) {
-//        items.clear()
-//        items.addAll(newList)
-//        notifyItemRangeInserted(0, newList.size)
-//    }
 
 }

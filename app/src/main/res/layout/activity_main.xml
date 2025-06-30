@@ -210,6 +210,34 @@
                         app:tint="@color/buttonTint"
                         app:backgroundTint="@color/buttonBackground"/>
                 </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <Button
+                        android:id="@+id/toggle_playlists_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Afficher les playlists" />
+
+                    <LinearLayout
+                        android:id="@+id/playlists_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone" /> <!-- caché par défaut -->
+
+                </LinearLayout>
+
+
+
+
+
             </LinearLayout>
 
             <!-- player -->

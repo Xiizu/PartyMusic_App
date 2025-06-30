@@ -21,6 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.util.Log
 import android.view.MotionEvent
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
@@ -33,6 +34,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import com.example.partymusicapp.activity.CreateRoomActivity
 import com.example.partymusicapp.interfaces.ApiService
+import com.example.partymusicapp.model.Playlist
 import com.example.partymusicapp.model.YouTubeVideoItem
 import com.example.partymusicapp.support.Database.RetrofitClient
 import com.example.partymusicapp.support.YouTubeAPI
@@ -47,6 +49,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.partymusicapp.support.OnYouTubeVideoClickListener
+import com.example.partymusicapp.support.PlaylistDAO
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
@@ -89,6 +92,7 @@ class MainActivity : BaseActivity() {
     private var pollingRunnable: Runnable? = null
     private var currentRoomId = -1
 
+
     // Création de la vue
     override fun onCreate(savedInstanceState: Bundle?) {
         // Contenu main
@@ -129,12 +133,18 @@ class MainActivity : BaseActivity() {
         // Assignation des variables globales
         musicDAO.init(this)
         roomDAO.init(this)
+        playlistDAO.init(this)
+
         adapter = MusicAdapter(mutableListOf())
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
         progressSpinner.visibility = View.GONE
         roomName = findViewById(R.id.room_name)
-        noMusicFound =  Music(10000,"Music Title","Author Name","00:00","9QbudSq30bo",0,1,1,1,"Mr.Tester")
+
+        // Playlist vide
+        var playlist : Playlist = Playlist(1,"Playlist",1)
+
+        noMusicFound =  Music(10000,"Music Title","Author Name","00:00","9QbudSq30bo",0,1,1,1, mutableListOf(playlist),"Mr.Tester")
         currentPlayingMusic = noMusicFound
         musics = mutableListOf(currentPlayingMusic)
 
@@ -331,6 +341,7 @@ class MainActivity : BaseActivity() {
                     playable = 1,
                     user_id = userDAO.get()!!.id,
                     room_id = roomDAO.get(intent.getIntExtra("ROOM_ID", -1))!!.id,
+                    playlists = mutableListOf(),
                     user_name = userDAO.get()!!.name
                 )
                 // Appeler l'API pour ajouter la musique
@@ -469,6 +480,10 @@ class MainActivity : BaseActivity() {
             youTubePlayerView.visibility = View.GONE
             progressBarEditable.visibility = View.GONE
             currentMusicLayout.visibility = View.GONE
+
+            val playlistsContainer = findViewById<LinearLayout>(R.id.playlists_container)
+            playlistsContainer.removeAllViews() // Nettoyer avant ajout
+            playlistsContainer.visibility = View.GONE
         }
         else {
             // Si l'utilisateur est le host, afficher la musique en cours
@@ -480,6 +495,73 @@ class MainActivity : BaseActivity() {
             youTubePlayerView.visibility = View.VISIBLE
             progressBarEditable.visibility = View.VISIBLE
             currentMusicLayout.visibility = View.VISIBLE
+
+
+            val playlistsContainer = findViewById<LinearLayout>(R.id.playlists_container)
+            val toggleButton = findViewById<Button>(R.id.toggle_playlists_button)
+
+            playlistsContainer.removeAllViews()
+
+            toggleButton.setOnClickListener {
+                if (playlistsContainer.visibility == View.GONE) {
+                    playlistsContainer.visibility = View.VISIBLE
+                    toggleButton.text = "Cacher les playlists"
+                } else {
+                    playlistsContainer.visibility = View.GONE
+                    toggleButton.text = "Afficher les playlists"
+                }
+            }
+
+            val playlists = playlistDAO.get(room)
+            for (playlist in playlists) {
+                val checkBox = CheckBox(this).apply {
+                    text = playlist.label
+                    tag = playlist.id
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                }
+                playlistsContainer.addView(checkBox)
+                val checkedPlaylistIds = mutableSetOf<Int>()
+                fun greyMusic(){
+                    adapter.clear()
+                    if (checkedPlaylistIds.isEmpty()){
+                        musics.forEach { music ->
+                            adapter.addItem(music)
+                            adapter.notifyItemInserted(adapter.itemCount - 1)
+                        }
+                    } else {
+                        musics.forEach { music ->
+                            var is_grey = true
+                            for (playlist in music.playlists) {
+                                if (playlist.id in checkedPlaylistIds) {
+                                    is_grey = false
+                                }
+                            }
+                            if (is_grey) {
+                                adapter.addItem(music)
+                                adapter.notifyItemInserted(adapter.itemCount - 1)
+                            } else {
+                                adapter.addItem(music, true)
+                                adapter.notifyItemInserted(adapter.itemCount - 1)
+                            }
+                        }
+                    }
+                    adapter.notifyDataSetChanged()
+                }
+                checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        checkedPlaylistIds.add(playlist.id)
+                    } else {
+                        checkedPlaylistIds.remove(playlist.id)
+                    }
+                    greyMusic()
+                }
+            }
+
+
+
         }
         // Mettre à jour les informations générales de la salle
         roomName.text = room.label

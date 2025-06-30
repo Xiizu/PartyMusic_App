@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowCompat
+import com.example.partymusicapp.support.PlaylistDAO
 import com.example.partymusicapp.support.YouTubeAPI
 
 open class BaseActivity : AppCompatActivity() {
@@ -64,6 +65,7 @@ open class BaseActivity : AppCompatActivity() {
     lateinit var rooms: ArrayList<Room>
     val musicDAO = MusicDAO()
     // var currentRoom: Room? = null
+    val playlistDAO = PlaylistDAO()
 
     // afficher la vue
     override fun setContentView(layoutResID: Int) {

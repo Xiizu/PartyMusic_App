@@ -6,6 +6,7 @@ data class Room (
     var description: String,
     var code: String,
     var host_id: Int,
+    var playlists: MutableList<Playlist> = mutableListOf(),
     var host_name: String)
 {
     override fun toString(): String {
